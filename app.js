@@ -5,6 +5,19 @@
 // ============================================================
 const APP_VERSION = 4;
 
+// ---- SEED DATA (auto-import on first launch) ----
+function seedIfEmpty(){
+  if(localStorage.getItem('ir_start')) return;
+  fetch('./seed-data.json').then(r=>r.json()).then(data=>{
+    for(const[k,v]of Object.entries(data)){
+      if(k==='ir_appver') continue;
+      localStorage.setItem(k, typeof v==='string'?v:JSON.stringify(v));
+    }
+    location.reload();
+  }).catch(()=>{});
+}
+seedIfEmpty();
+
 // ---- EXERCISE DATABASE ----
 // defaultBase = suggested starting weight (lbs). For DB exercises: per hand.
 // inc = weekly weight increase (lbs). unit = 'each' (per dumbbell) or 'total' (loaded bar).

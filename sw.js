@@ -1,10 +1,11 @@
-const CACHE_NAME = 'ironrunner-v1';
+const CACHE_NAME = 'ironrunner-v2';
 const ASSETS = [
   './',
   './index.html',
   './app.js',
   './style.css',
   './manifest.json',
+  './seed-data.json',
   './icons/icon-192.png',
   './icons/icon-512.png'
 ];
