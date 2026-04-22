@@ -1009,55 +1009,110 @@ function calcNutri(weight, liftD, runD, mode){
   return result;
 }
 
-// ---- PROGRESSION LOGIC (double progression based on set completion) ----
-// Small step = smallest meaningful jump for the exercise
+// ---- PROGRESSION LOGIC (per-set tracking + conservative double progression) ----
+
+// Smallest meaningful weight jump for an exercise
 function stepFor(ex){
   if(!ex) return 5;
-  if(ex.equip && (ex.equip.toLowerCase().includes('trap bar')||ex.equip.toLowerCase().includes('machine'))) return 5;
-  if(ex.unit==='each') return 2.5;
+  const eq = (ex.equip || '').toLowerCase();
+  if(eq.includes('trap bar') || eq.includes('machine') || eq.includes('cable')) return 5;
+  if(ex.unit === 'each') return 2.5;
   return 5;
 }
 
-// Scan sessions backward (up to 180 days). For each past occurrence of exId,
-// return the most recent BEFORE `beforeDate`, with weight and set-completion ratio.
-function lastAttempt(exId, beforeDate){
+// Read a session's performance for one exercise. Returns an array of {w, r} per set
+// (only completed sets — incomplete sets are absent). Supports both the new per-set
+// storage (ses.perf[exId]) and the legacy storage (ses.sets[exId] boolean + ses.wts[exId]).
+function sessionPerf(ses, exId){
+  if(!ses) return null;
+  // New format first
+  if(ses.perf && Array.isArray(ses.perf[exId])){
+    const out = ses.perf[exId].filter(p => p && typeof p.w === 'number' && typeof p.r === 'number');
+    return out.length ? out : null;
+  }
+  // Legacy: boolean sets + single weight, infer from context
+  const sets = ses.sets && ses.sets[exId];
+  const wt = ses.wts && ses.wts[exId];
+  if(Array.isArray(sets) && wt){
+    // We don't know the target reps from old data — just mark completed sets as "hit target"
+    // by recording a sentinel reps value equal to the prescribed target at suggest time.
+    return sets.map(done => done ? { w: wt, r: null } : null).filter(Boolean);
+  }
+  return null;
+}
+
+// Walk back up to 180 days. Return the most recent session that has any perf data
+// for this exercise, along with the "target reps" for that session (parsed from the
+// scheduled workout, best-effort).
+function lastPerformance(exId, beforeDate){
   const start = norm(beforeDate || new Date());
   for(let i=1;i<180;i++){
-    const d=new Date(start); d.setDate(d.getDate()-i);
-    const ses=S.session(ds(d));
-    const wt=ses && ses.wts && ses.wts[exId];
-    const sets=ses && ses.sets && ses.sets[exId];
-    if(wt){
-      const setCount = Array.isArray(sets) ? sets.length : 0;
-      const doneCount = Array.isArray(sets) ? sets.filter(Boolean).length : 0;
-      return { weight:wt, date:ds(d), setCount, doneCount };
+    const d = new Date(start); d.setDate(d.getDate()-i);
+    const ses = S.session(ds(d));
+    const perf = sessionPerf(ses, exId);
+    if(perf && perf.length){
+      // Try to find the prescribed reps from the scheduled workout on that day.
+      let targetReps = null;
+      try {
+        const w = S.startDate ? workoutFor(d) : null;
+        if(w && w.exercises){
+          const match = w.exercises.find(e => e.id === exId);
+          if(match) targetReps = parseInt(match.reps) || null;
+        }
+      } catch(e) {}
+      return { date: ds(d), perf, targetReps };
     }
   }
   return null;
 }
 
-// Given the last attempt, recommend the next target weight using double progression:
-//   all sets completed -> bump weight by one small step
-//   most sets completed (>= 50%) -> hold weight, retry
-//   fewer than 50% completed, or no sets checked -> drop one small step
-function suggestNext(exId){
-  const ex=EX[exId]; if(!ex) return null;
-  const last = lastAttempt(exId, new Date());
-  if(!last) return { weight:ex.defaultBase, label:'start', last:null, unit:ex.unit };
+// Conservative double progression:
+//   1. Group completed sets by weight attempted.
+//   2. Find the heaviest weight where the user made a genuine attempt.
+//   3. If ALL sets at that weight hit target reps -> bump to weight + step.
+//   4. If SOME sets at that weight fell short -> hold the weight, try to finish next time.
+//   5. If MOST sets at that weight fell well short (<60% of target reps, averaged) -> drop one step.
+function suggestNext(exId, targetRepsHint){
+  const ex = EX[exId]; if(!ex) return null;
+  const last = lastPerformance(exId, new Date());
+  if(!last) return { weight: ex.defaultBase, label: 'start', last: null, unit: ex.unit };
   const step = stepFor(ex);
-  const { weight, setCount, doneCount } = last;
-  if(setCount > 0 && doneCount >= setCount){
-    return { weight: weight + step, label:'bump', last, step, unit:ex.unit };
+  const { perf } = last;
+  // Target reps: prefer the caller's hint (today's prescribed), fall back to last session's.
+  const target = targetRepsHint || last.targetReps || null;
+
+  // Top weight actually attempted
+  const topWeight = perf.reduce((m, p) => Math.max(m, p.w), 0);
+  const atTop = perf.filter(p => p.w === topWeight);
+
+  // Count how many at top weight fully hit target reps. For legacy data (r === null),
+  // treat completion as "hit target" — that's all the info we have.
+  const hitTargetCount = atTop.filter(p => p.r === null || (target && p.r >= target)).length;
+  const totalAtTop = atTop.length;
+
+  // Average rep ratio at top weight (for drop detection)
+  let avgRatio = 1;
+  if(target){
+    const ratios = atTop.map(p => p.r === null ? 1 : Math.min(1, p.r / target));
+    avgRatio = ratios.reduce((s,x)=>s+x, 0) / ratios.length;
   }
-  if(setCount === 0){
-    // Weight was entered last time but no sets were checked — assume stale / unrecorded.
-    // Default to holding weight; user can override.
-    return { weight, label:'hold', last, step, unit:ex.unit };
+
+  const summary = {
+    topWeight,
+    totalAtTop,
+    hitTargetCount,
+    avgRatio: Math.round(avgRatio * 100) / 100,
+    targetReps: target,
+  };
+
+  // Conservative rules
+  if(hitTargetCount >= totalAtTop && totalAtTop > 0){
+    return { weight: topWeight + step, label: 'bump', last, summary, step, unit: ex.unit };
   }
-  if(doneCount / setCount >= 0.5){
-    return { weight, label:'hold', last, step, unit:ex.unit };
+  if(avgRatio < 0.6){
+    return { weight: Math.max(0, topWeight - step), label: 'drop', last, summary, step, unit: ex.unit };
   }
-  return { weight: Math.max(0, weight - step), label:'drop', last, step, unit:ex.unit };
+  return { weight: topWeight, label: 'hold', last, summary, step, unit: ex.unit };
 }
 
 // ---- LIFT PR TRACKING ----
@@ -1192,11 +1247,18 @@ const App = {
     <div class="wc"><strong>Warm Up</strong>${w.warmup}</div>`;
 
     w.exercises.forEach(ex=>{
-      const info=EX[ex.id], sets=ses.sets&&ses.sets[ex.id]||[], wt=ses.wts&&ses.wts[ex.id]||'';
-      const tgt=suggestNext(ex.id), n=parseInt(ex.sets);
+      const info=EX[ex.id];
+      const targetReps = parseInt(ex.reps) || null;
+      const tgt = suggestNext(ex.id, targetReps);
+      const numSets = parseInt(ex.sets);
       const intCls = ex.int==='heavy'?'int-heavy':ex.int==='light'?'int-light':'int-mod';
       const intLbl = ex.int==='heavy'?'HEAVY':ex.int==='light'?'LIGHT':'MODERATE';
       const unitLbl = tgt && tgt.unit==='each' ? 'lbs ea' : 'lbs';
+      const perf = (ses.perf && ses.perf[ex.id]) || [];
+      // Legacy fallback: if user used the old UI today, hydrate perf from ses.sets + ses.wts
+      const legacySets = ses.sets && ses.sets[ex.id];
+      const legacyWt = ses.wts && ses.wts[ex.id];
+      const suggestedW = tgt ? tgt.weight : info.defaultBase;
 
       h+=`<div class="exercise">
         <div class="exercise-header">
@@ -1210,28 +1272,44 @@ const App = {
         </div>
         <div class="exercise-note">${ex.note}</div>`;
 
-      // Target weight row \u2014 double progression based on last session's set completion
+      // Target weight row \u2014 conservative double progression based on per-set history
       if(tgt){
         if(tgt.label==='start'){
           h+=`<div class="target-row"><span class="target-wt">Suggested start: ~${tgt.weight} ${unitLbl}</span></div>`;
         } else if(tgt.label==='bump'){
-          h+=`<div class="target-row"><span class="target-wt">Target: ${tgt.weight} ${unitLbl}</span> <span class="target-inc">\u2191${tgt.step} \u2014 you hit all ${tgt.last.setCount} sets at ${tgt.last.weight}</span></div>`;
+          h+=`<div class="target-row"><span class="target-wt">Target: ${tgt.weight} ${unitLbl}</span> <span class="target-inc">\u2191${tgt.step} \u2014 ${tgt.summary.hitTargetCount}/${tgt.summary.totalAtTop} sets hit ${tgt.summary.targetReps||'target'} reps at ${tgt.summary.topWeight}</span></div>`;
         } else if(tgt.label==='hold'){
-          const lastNote = tgt.last.setCount>0 ? `Hold \u2014 last: ${tgt.last.doneCount}/${tgt.last.setCount} sets at ${tgt.last.weight}` : `Hold \u2014 last entry: ${tgt.last.weight}`;
-          h+=`<div class="target-row"><span class="target-wt">Target: ${tgt.weight} ${unitLbl}</span> <span class="target-inc" style="color:var(--muted)">${lastNote}</span></div>`;
+          const last = tgt.summary;
+          const hitNote = last.targetReps ? `${last.hitTargetCount}/${last.totalAtTop} sets hit ${last.targetReps} reps at ${last.topWeight}` : `last: ${last.totalAtTop} sets at ${last.topWeight}`;
+          h+=`<div class="target-row"><span class="target-wt">Target: ${tgt.weight} ${unitLbl}</span> <span class="target-inc" style="color:var(--muted)">Hold \u2014 ${hitNote}</span></div>`;
         } else if(tgt.label==='drop'){
-          h+=`<div class="target-row"><span class="target-wt">Target: ${tgt.weight} ${unitLbl}</span> <span class="target-inc" style="color:var(--danger)">\u2193${tgt.step} \u2014 regroup from ${tgt.last.weight}</span></div>`;
+          h+=`<div class="target-row"><span class="target-wt">Target: ${tgt.weight} ${unitLbl}</span> <span class="target-inc" style="color:var(--danger)">\u2193${tgt.step} \u2014 avg ${Math.round(tgt.summary.avgRatio*100)}% of target reps at ${tgt.summary.topWeight}</span></div>`;
         }
       }
 
-      h+=`<div class="exercise-weight">
-          <label>lbs:</label>
-          <input type="number" class="wt-in" data-exid="${ex.id}" value="${wt}" placeholder="${tgt?tgt.weight:'\u2014'}" inputmode="decimal">
-          <span class="target-unit">${info.unit==='each'?'per dumbbell':'total'}</span>
-        </div>
-        <div class="sets-row">`;
-      for(let s=0;s<n;s++) h+=`<button class="set-btn${sets[s]?' done':''}" data-exid="${ex.id}" data-set="${s}">${s+1}</button>`;
-      h+=`<button class="rest-btn" data-rest="${ex.rest}">Rest ${ex.rest}s</button></div></div>`;
+      // Per-set rows: weight \u00d7 reps + check button
+      h+=`<div class="set-list">`;
+      for(let s=0; s<numSets; s++){
+        const p = perf[s];
+        // Derive initial values: prefer per-set perf, else legacy same-weight + legacy checkmark, else defaults
+        let wVal = p ? p.w : (legacyWt || '');
+        let rVal = p ? (p.r !== null ? p.r : (targetReps || '')) : '';
+        const isDone = !!p || (Array.isArray(legacySets) && legacySets[s]);
+        const wPh = suggestedW;
+        const rPh = targetReps || '';
+        h+=`<div class="set-row${isDone?' done':''}" data-exid="${ex.id}" data-set="${s}">
+          <span class="set-num">${s+1}</span>
+          <input type="number" class="set-wt" data-exid="${ex.id}" data-set="${s}" value="${wVal}" placeholder="${wPh}" inputmode="decimal">
+          <span class="set-x">\u00d7</span>
+          <input type="number" class="set-reps" data-exid="${ex.id}" data-set="${s}" value="${rVal}" placeholder="${rPh}" inputmode="numeric">
+          <button class="set-check${isDone?' done':''}" data-exid="${ex.id}" data-set="${s}" data-rest="${ex.rest}" aria-label="Complete set ${s+1}">\u2713</button>
+        </div>`;
+      }
+      h+=`</div>
+        <div class="set-actions">
+          <button class="rest-btn" data-rest="${ex.rest}">Rest ${ex.rest}s</button>
+          <span class="set-hint">${info.unit==='each'?'lbs per DB':'total lbs'}</span>
+        </div></div>`;
     });
 
     h+=`<div class="wc"><strong>Cool Down</strong>${w.cooldown}</div>
@@ -1547,27 +1625,76 @@ const App = {
     const cb=document.getElementById('complete-btn');
     if(cb)cb.addEventListener('click',()=>{const d=ds(norm(new Date()));S.setDone(d,!S.completed[d]);this.render();});
 
-    // Set buttons — fire rest timer after EVERY set marked done (including the last)
-    document.querySelectorAll('.set-btn').forEach(b=>b.addEventListener('click',()=>{
-      const exId=b.dataset.exid,si=parseInt(b.dataset.set),d=ds(norm(new Date())),ses=S.session(d);
-      if(!ses.sets)ses.sets={};if(!ses.sets[exId])ses.sets[exId]=[];
-      while(ses.sets[exId].length<=si)ses.sets[exId].push(false);
-      ses.sets[exId][si]=!ses.sets[exId][si]; S.saveSession(d,ses);
-      b.classList.toggle('done');
-      if(b.classList.contains('done')){
-        b.classList.add('pop');setTimeout(()=>b.classList.remove('pop'),300);
-        const row=b.closest('.sets-row'),rb=row.querySelector('.rest-btn');
-        if(rb) this.startTimer(parseInt(rb.dataset.rest));
+    // Per-set check buttons — log {w, r} for this set, fire rest timer
+    document.querySelectorAll('.set-check').forEach(b=>b.addEventListener('click',()=>{
+      const exId = b.dataset.exid;
+      const si = parseInt(b.dataset.set);
+      const rest = parseInt(b.dataset.rest) || 0;
+      const d = ds(norm(new Date()));
+      const ses = S.session(d);
+
+      // Find the weight and reps inputs for this set row
+      const row = b.closest('.set-row');
+      const wIn = row.querySelector('.set-wt');
+      const rIn = row.querySelector('.set-reps');
+
+      if(!ses.perf) ses.perf = {};
+      if(!Array.isArray(ses.perf[exId])) ses.perf[exId] = [];
+
+      // Toggle: if already logged, unlog
+      if(ses.perf[exId][si]){
+        ses.perf[exId][si] = null;
+        b.classList.remove('done');
+        row.classList.remove('done');
+      } else {
+        // Parse weight (fall back to placeholder)
+        const wRaw = wIn.value || wIn.placeholder;
+        const rRaw = rIn.value || rIn.placeholder;
+        const w = parseFloat(wRaw);
+        const r = parseInt(rRaw);
+        if(isNaN(w) || isNaN(r)){
+          alert('Enter weight and reps for this set before checking it off.');
+          return;
+        }
+        while(ses.perf[exId].length <= si) ses.perf[exId].push(null);
+        ses.perf[exId][si] = { w, r };
+
+        // Keep legacy sets[] and wts[] in sync so old views still work
+        if(!ses.sets) ses.sets = {};
+        if(!Array.isArray(ses.sets[exId])) ses.sets[exId] = [];
+        while(ses.sets[exId].length <= si) ses.sets[exId].push(false);
+        ses.sets[exId][si] = true;
+        if(!ses.wts) ses.wts = {};
+        ses.wts[exId] = w;
+
+        b.classList.add('done', 'pop');
+        row.classList.add('done');
+        setTimeout(()=>b.classList.remove('pop'), 300);
+
+        if(rest > 0) this.startTimer(rest);
       }
+      S.saveSession(d, ses);
     }));
 
-    // Weight inputs
-    document.querySelectorAll('.wt-in').forEach(inp=>inp.addEventListener('change',()=>{
-      const d=ds(norm(new Date())),ses=S.session(d);
-      if(!ses.wts)ses.wts={};ses.wts[inp.dataset.exid]=inp.value?parseFloat(inp.value):null;S.saveSession(d,ses);
+    // Per-set weight input change — auto-fill subsequent empty weight inputs
+    // for the same exercise so pyramiding is easy but same-weight is automatic.
+    document.querySelectorAll('.set-wt').forEach(inp=>inp.addEventListener('change',()=>{
+      const exId = inp.dataset.exid;
+      const si = parseInt(inp.dataset.set);
+      const val = inp.value;
+      if(!val) return;
+      // Fill sibling rows with same exid after this one, but ONLY if they are
+      // (a) not yet completed, and (b) currently empty.
+      document.querySelectorAll(`.set-wt[data-exid="${exId}"]`).forEach(other=>{
+        const osi = parseInt(other.dataset.set);
+        if(osi <= si) return;
+        const row = other.closest('.set-row');
+        if(row && row.classList.contains('done')) return;
+        if(!other.value) other.value = val;
+      });
     }));
 
-    // Rest buttons
+    // Rest buttons (manual)
     document.querySelectorAll('.rest-btn').forEach(b=>b.addEventListener('click',()=>this.startTimer(parseInt(b.dataset.rest))));
     // Exercise info
     document.querySelectorAll('.exercise-name').forEach(el=>el.addEventListener('click',()=>this.showExInfo(el.dataset.exid)));

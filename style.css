@@ -105,6 +105,61 @@ body {
     color:var(--text); font-size:13px; text-align:center;
 }
 .prev-weight { font-size:11px; color:var(--dim); }
+
+/* Per-set rows: set number, weight, reps, check */
+.set-list { display:flex; flex-direction:column; gap:6px; margin-bottom:8px; }
+.set-row {
+    display:flex; align-items:center; gap:6px;
+    padding:6px 8px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--rs);
+    transition: all .2s;
+}
+.set-row.done {
+    background:var(--lift-bg);
+    border-color:var(--lift);
+}
+.set-num {
+    font-size:11px; font-weight:700; color:var(--muted);
+    width:18px; text-align:center; letter-spacing:0.5px;
+}
+.set-wt, .set-reps {
+    flex:1; min-width:0;
+    padding:6px 8px;
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:6px;
+    color:var(--text);
+    font-size:14px; font-weight:600;
+    text-align:center;
+    font-variant-numeric: tabular-nums;
+}
+.set-wt { max-width:72px; }
+.set-reps { max-width:52px; }
+.set-x { font-size:12px; color:var(--muted); }
+.set-check {
+    width:36px; height:36px;
+    flex-shrink:0;
+    border:1px solid var(--border);
+    background:var(--card);
+    color:var(--dim);
+    border-radius:var(--rs);
+    font-size:18px; font-weight:700;
+    cursor:pointer;
+    transition: all .15s;
+}
+.set-check.done {
+    background:var(--success);
+    border-color:var(--success);
+    color:#fff;
+}
+.set-check:active { transform: scale(0.92); }
+
+.set-actions { display:flex; align-items:center; gap:8px; }
+.set-hint { font-size:11px; color:var(--dim); }
+
+/* Legacy support */
 .sets-row { display:flex; gap:6px; flex-wrap:wrap; }
 .set-btn {
     width:40px; height:32px; border-radius:var(--rs);
@@ -113,6 +168,7 @@ body {
 }
 .set-btn.done { background:var(--lift); border-color:var(--lift); color:#fff; }
 .set-btn:active { transform:scale(.95); }
+
 .rest-btn {
     height:32px; padding:0 12px; border-radius:var(--rs);
     border:1px solid var(--primary); background:var(--primary-bg);
@@ -312,7 +368,7 @@ body {
 
 /* Animations */
 @keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.2)} 100%{transform:scale(1)} }
-.set-btn.pop { animation:pop .3s ease-out; }
+.set-btn.pop, .set-check.pop { animation:pop .3s ease-out; }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width:4px; }
