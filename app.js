@@ -4,6 +4,7 @@
 // Equipment: trap bar, adjustable bench, adjustable dumbbells
 // ============================================================
 const APP_VERSION = 4;
+const DATA_MIGRATION = 'ir_mig_v2';
 
 // ---- SEED DATA (auto-import on first launch) ----
 function seedIfEmpty(){
@@ -17,6 +18,26 @@ function seedIfEmpty(){
   }).catch(()=>{});
 }
 seedIfEmpty();
+
+// ---- ONE-TIME DATA MIGRATION (non-destructive) ----
+// Convert ir_start from ISO UTC (e.g. "2026-03-26T05:00:00.000Z") to local "YYYY-MM-DD".
+// The ISO parse in local timezone may land on the previous calendar day, causing off-by-one.
+// We re-extract Y/M/D from the local-parsed date — this mirrors how the app has always
+// displayed dates, so the user's perceived start date is preserved.
+(function migrate(){
+  if(localStorage.getItem(DATA_MIGRATION)) return;
+  const raw = localStorage.getItem('ir_start');
+  if(raw){
+    let stripped = raw;
+    try { stripped = JSON.parse(raw); } catch(e) {}
+    if(typeof stripped==='string' && stripped.indexOf('T')>0){
+      const d = new Date(stripped);
+      const local = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+      localStorage.setItem('ir_start', JSON.stringify(local));
+    }
+  }
+  localStorage.setItem(DATA_MIGRATION, '1');
+})();
 
 // ---- EXERCISE DATABASE ----
 // defaultBase = suggested starting weight (lbs). For DB exercises: per hand.
@@ -147,6 +168,54 @@ const EX = {
     equip:'Light dumbbells + flat bench', unit:'each', defaultBase:20, inc:2.5,
     yt:'https://www.youtube.com/results?search_query=dumbbell+chest+fly+form+tutorial+pec',
     form:['Lie flat, dumbbells pressed above chest','Slight bend in elbows \u2014 lock this angle','Open arms wide, lowering dumbbells in a wide arc','Feel a deep stretch in your chest at the bottom','Squeeze chest to bring dumbbells back together','Use MUCH lighter weight than presses \u2014 this isolates chest']
+  },
+  face_pull: {
+    name:'Cable Face Pull', primary:['Rear Delts'], secondary:['Upper Back','Rotator Cuff'],
+    equip:'Cable machine + rope attachment (home: band anchored high)', unit:'total', defaultBase:30, inc:2.5,
+    yt:'https://www.youtube.com/results?search_query=cable+face+pull+form+tutorial+rear+delts',
+    form:['Set cable/pulley at upper chest to face height','Grip rope with palms down, step back until cable is taut','Pull rope to your face \u2014 aim the ends past your ears','External rotation at the top \u2014 pinkies back, thumbs up','Squeeze shoulder blades and rear delts hard','Slow return with control','Critical for shoulder health and posture']
+  },
+  cable_row: {
+    name:'Seated Cable Row', primary:['Lats','Mid Back'], secondary:['Biceps','Rear Delts'],
+    equip:'Cable row machine (gym) or resistance band (home)', unit:'total', defaultBase:90, inc:5,
+    yt:'https://www.youtube.com/results?search_query=seated+cable+row+form+tutorial',
+    form:['Sit tall, feet on platform, slight knee bend','Grip handle, arms extended, chest up','Pull handle to lower ribs \u2014 elbows close to body','Squeeze shoulder blades together at the end','Slow return, let lats stretch at the start',"Don't lean back or rock \u2014 keep torso vertical"]
+  },
+  lat_pulldown: {
+    name:'Lat Pulldown', primary:['Lats'], secondary:['Biceps','Rear Delts'],
+    equip:'Lat pulldown machine (gym) or pull-up bar (home)', unit:'total', defaultBase:90, inc:5,
+    yt:'https://www.youtube.com/results?search_query=lat+pulldown+form+tutorial',
+    form:['Grip bar slightly wider than shoulder-width, palms forward','Sit down, knees under pads, lean back slightly (~15\u00b0)','Pull bar to upper chest \u2014 lead with elbows down and back','Squeeze lats hard at the bottom','Slow return, let lats stretch fully',"Don't pull behind the neck \u2014 bad for shoulders"]
+  },
+  leg_press: {
+    name:'Leg Press', primary:['Quads','Glutes'], secondary:['Hamstrings'],
+    equip:'Leg press machine (gym only)', unit:'total', defaultBase:180, inc:10,
+    yt:'https://www.youtube.com/results?search_query=leg+press+form+tutorial+proper',
+    form:['Sit in the machine, back flat against the pad','Feet shoulder-width on platform, mid-foot','Unlock safety, lower weight under control',"Knees track over toes \u2014 don't let them cave in",'Go until knees reach ~90\u00b0 (deeper if mobile)',"Drive through mid-foot to extend \u2014 don't lock out knees"]
+  },
+  leg_curl: {
+    name:'Seated Leg Curl', primary:['Hamstrings'], secondary:['Calves'],
+    equip:'Leg curl machine (gym only)', unit:'total', defaultBase:70, inc:5,
+    yt:'https://www.youtube.com/results?search_query=seated+leg+curl+form+tutorial',
+    form:['Sit in machine, thigh pad above knees','Heels on roller, knees aligned with machine pivot','Curl heels down and under \u2014 squeeze hamstrings hard','Pause 1 sec at full contraction',"Slow return (3 sec) \u2014 don't let weight slam","Direct hamstring work \u2014 compounds don't fully stress them"]
+  },
+  hang_knee: {
+    name:'Hanging Knee Raise', primary:['Abs','Hip Flexors'], secondary:['Grip'],
+    equip:'Pull-up bar', unit:'total', defaultBase:0, inc:0,
+    yt:'https://www.youtube.com/results?search_query=hanging+knee+raise+form+tutorial',
+    form:['Hang from pull-up bar, arms straight, shoulders engaged',"Core braced \u2014 no swinging",'Raise knees toward chest \u2014 think curl your pelvis up','Pause 1 sec at top, feel the ab squeeze','Lower slowly (3 sec) with control',"Progression: knees \u2192 bent-leg raise \u2192 straight-leg raise \u2192 toes-to-bar"]
+  },
+  plank: {
+    name:'Plank', primary:['Abs','Core'], secondary:['Shoulders','Glutes'],
+    equip:'Floor / mat', unit:'total', defaultBase:0, inc:0,
+    yt:'https://www.youtube.com/results?search_query=proper+plank+form+tutorial',
+    form:['Forearms on ground, elbows under shoulders','Body in a straight line from heels to head','Squeeze glutes and brace abs hard',"Don't let hips sag or pike up",'Breathe steady \u2014 hold for time (30\u201390s)','Finisher for every leg/core day']
+  },
+  tri_pushdown: {
+    name:'Cable Tricep Pushdown', primary:['Triceps'], secondary:[],
+    equip:'Cable machine + rope or bar (gym only)', unit:'total', defaultBase:40, inc:2.5,
+    yt:'https://www.youtube.com/results?search_query=cable+tricep+pushdown+form+tutorial',
+    form:['Stand facing cable, grip rope at chest height',"Pin elbows to your sides \u2014 they don't move",'Push rope down, spreading ends apart at the bottom','Squeeze triceps hard at full extension',"Slow return to chest height \u2014 feel the stretch","Don't let elbows drift forward"]
   }
 };
 
@@ -183,7 +252,8 @@ const PHASES = [
           {id:'db_incline',sets:3,reps:'10',rest:60,int:'mod',rpe:'6-7',note:'BASELINE: 25-35 lbs each. Bench at 30-45\u00b0. Slightly lighter than flat bench.'},
           {id:'trap_row',sets:3,reps:'10',rest:60,int:'mod',rpe:'6-7',note:'BASELINE: Same trap bar as deadlift, lighter weight (~95-115 lbs). Hinge forward, pull to belly.'},
           {id:'db_lateral',sets:2,reps:'12',rest:45,int:'light',rpe:'6',note:'BASELINE: 8-12 lbs each. Seriously. These are humbling. Use light weight.'},
-          {id:'db_tri_oh',sets:2,reps:'12',rest:45,int:'light',rpe:'6',note:'BASELINE: 20-30 lb dumbbell, both hands. Elbows by ears, feel the stretch.'}
+          {id:'db_tri_oh',sets:2,reps:'12',rest:45,int:'light',rpe:'6',note:'BASELINE: 20-30 lb dumbbell, both hands. Elbows by ears, feel the stretch.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]
       },
       p1c:{
@@ -195,7 +265,8 @@ const PHASES = [
           {id:'db_lunge',sets:3,reps:'8 ea',rest:60,int:'mod',rpe:'6-7',note:'BASELINE: 20-30 lbs each. Alternating legs. Take your time, balance matters.'},
           {id:'db_decline',sets:3,reps:'10',rest:60,int:'mod',rpe:'6-7',note:'BASELINE: 30-40 lbs each. Slight decline on the bench.'},
           {id:'db_row',sets:3,reps:'10 ea',rest:60,int:'mod',rpe:'7',note:'Same or slightly more weight than earlier this week.'},
-          {id:'db_hammer',sets:2,reps:'12',rest:45,int:'light',rpe:'6',note:'BASELINE: 15-20 lbs. Palms face each other. Hits outer bicep and forearms.'}
+          {id:'db_hammer',sets:2,reps:'12',rest:45,int:'light',rpe:'6',note:'BASELINE: 15-20 lbs. Palms face each other. Hits outer bicep and forearms.'},
+          {id:'plank',sets:3,reps:'45s',rest:45,int:'light',rpe:'7',note:'Core finisher. Hold for 30-60 seconds, focus on tight glutes and braced abs.'}
         ]
       },
       p1r1:{name:'Easy Run',type:'run',dur:'20-30 min',dist:'2-3 miles',effort:'Zone 2 \u2014 conversational',
@@ -211,7 +282,7 @@ const PHASES = [
   {
     id:2, name:'Building', tag:'Add Volume & Load', weeks:4, liftDays:4, runDays:2, mode:'recomp',
     desc:'You\'re moving from base to workout phase. Upper/Lower split means more focus per muscle group. Four lifting days. Weights are going up. You\'ll start seeing real changes in the mirror.',
-    prog:'Add 5 lbs/week on compound lifts (deadlift, bench, rows) if you hit all reps last week. Dumbbell isolation: go up 2.5-5 lbs when the last set feels like RPE 6 or below.',
+    prog:'DOUBLE PROGRESSION: the app tracks your last session per exercise. Hit all prescribed sets at a weight, the next session suggests +one step (DB +2.5, trap bar/machine +5). Miss sets? It holds or drops weight. No arbitrary weekly increases \u2014 your real performance drives progression.',
     schedule:[
       {type:'lift',wk:'p2ua'}, {type:'lift',wk:'p2la'}, {type:'run',wk:'p2r1'}, {type:'lift',wk:'p2ub'}, {type:'lift',wk:'p2lb'}, {type:'run',wk:'p2r2'}, {type:'rest'}
     ],
@@ -226,7 +297,8 @@ const PHASES = [
           {id:'db_incline',sets:3,reps:'10',rest:60,int:'mod',rpe:'7',note:'Lighter than flat bench. Focus on the upper chest squeeze at top.'},
           {id:'db_shoulder',sets:3,reps:'10',rest:60,int:'mod',rpe:'7',note:'Building those boulder shoulders. Seated, controlled.'},
           {id:'db_curl',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Heavier than Phase 1. Still strict form.'},
-          {id:'db_tri_oh',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'One dumbbell, both hands. Feel the deep stretch.'}
+          {id:'db_tri_oh',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'One dumbbell, both hands. Feel the deep stretch.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]
       },
       p2la:{
@@ -238,7 +310,8 @@ const PHASES = [
           {id:'db_goblet',sets:3,reps:'10',rest:60,int:'mod',rpe:'7',note:'Heavier dumbbell. Depth over weight always.'},
           {id:'db_lunge',sets:3,reps:'10 ea',rest:60,int:'mod',rpe:'7',note:'Walking or stationary. Dumbbells at sides.'},
           {id:'db_rdl',sets:3,reps:'10',rest:60,int:'mod',rpe:'7',note:'Feel the hamstring stretch. 3 second negative on the way down.'},
-          {id:'farmer',sets:3,reps:'40 steps',rest:60,int:'mod',rpe:'7',note:'Load up the trap bar. Walk tall. Grip, core, everything.'}
+          {id:'farmer',sets:3,reps:'40 steps',rest:60,int:'mod',rpe:'7',note:'Load up the trap bar. Walk tall. Grip, core, everything.'},
+          {id:'plank',sets:3,reps:'45s',rest:45,int:'light',rpe:'7',note:'Core finisher. Hold for 30-60 seconds, focus on tight glutes and braced abs.'}
         ]
       },
       p2ub:{
@@ -251,7 +324,8 @@ const PHASES = [
           {id:'db_bench',sets:3,reps:'10',rest:60,int:'mod',rpe:'7',note:'Lighter than Upper A. Chase the chest pump.'},
           {id:'db_lateral',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'These build the wide-shoulder look. Still light weight.'},
           {id:'db_hammer',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Neutral grip. Builds forearms and arm thickness.'},
-          {id:'db_skull',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'New exercise. Lower to temples, extend up. Great tricep builder.'}
+          {id:'db_skull',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'New exercise. Lower to temples, extend up. Great tricep builder.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]
       },
       p2lb:{
@@ -263,7 +337,8 @@ const PHASES = [
           {id:'db_split',sets:3,reps:'10 ea',rest:75,int:'mod',rpe:'7-8',note:'NEW: rear foot on bench. Tough but incredibly effective for legs.'},
           {id:'db_step',sets:3,reps:'10 ea',rest:60,int:'mod',rpe:'7',note:'Step up onto bench. Drive through the top leg only.'},
           {id:'db_calf',sets:3,reps:'15',rest:45,int:'light',rpe:'7',note:'High reps for calves. Full range of motion. Pause at top.'},
-          {id:'farmer',sets:3,reps:'40 steps',rest:60,int:'mod',rpe:'7',note:'Heavy. Stand tall. Builds everything.'}
+          {id:'farmer',sets:3,reps:'40 steps',rest:60,int:'mod',rpe:'7',note:'Heavy. Stand tall. Builds everything.'},
+          {id:'plank',sets:3,reps:'45s',rest:45,int:'light',rpe:'7',note:'Core finisher. Hold for 30-60 seconds, focus on tight glutes and braced abs.'}
         ]
       },
       p2r1:{name:'Easy Run',type:'run',dur:'25-30 min',dist:'3 miles',effort:'Zone 2',
@@ -308,7 +383,8 @@ const PHASES = [
           {id:'db_row',sets:3,reps:'10 ea',rest:60,int:'mod',rpe:'7-8',note:'Slow and controlled. Really feel the lat working.'},
           {id:'db_curl',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Strict form. No ego lifting. 3 sec negative.'},
           {id:'db_hammer',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Builds arm thickness from every angle.'},
-          {id:'trap_shrug',sets:3,reps:'12',rest:45,int:'mod',rpe:'7',note:'Heavy shrugs. Hold 2 sec at top. Builds the yoke.'}
+          {id:'trap_shrug',sets:3,reps:'12',rest:45,int:'mod',rpe:'7',note:'Heavy shrugs. Hold 2 sec at top. Builds the yoke.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]
       },
       p3legs:{
@@ -321,7 +397,8 @@ const PHASES = [
           {id:'db_split',sets:3,reps:'10 ea',rest:75,int:'mod',rpe:'8',note:'These should be getting easier. Time to add weight.'},
           {id:'db_rdl',sets:3,reps:'10',rest:60,int:'mod',rpe:'7-8',note:'Slow negative. Feel every inch of that hamstring stretch.'},
           {id:'db_calf',sets:4,reps:'15',rest:45,int:'light',rpe:'7',note:'High volume calves. Full ROM. Pause at top and bottom.'},
-          {id:'farmer',sets:3,reps:'40 steps',rest:60,int:'mod',rpe:'7',note:'Heavy walks. Core braced, walk like a tank.'}
+          {id:'farmer',sets:3,reps:'40 steps',rest:60,int:'mod',rpe:'7',note:'Heavy walks. Core braced, walk like a tank.'},
+          {id:'plank',sets:3,reps:'45s',rest:45,int:'light',rpe:'7',note:'Core finisher. Hold for 30-60 seconds, focus on tight glutes and braced abs.'}
         ]
       },
       p3upper:{
@@ -335,7 +412,8 @@ const PHASES = [
           {id:'trap_row',sets:3,reps:'10',rest:60,int:'mod',rpe:'7',note:'Back volume. Pull and squeeze.'},
           {id:'db_shoulder',sets:3,reps:'10',rest:60,int:'mod',rpe:'7',note:'Shoulders getting rounder by the week.'},
           {id:'db_curl',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Arm work to close out.'},
-          {id:'db_lateral',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Cap off with lateral raises for width.'}
+          {id:'db_lateral',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Cap off with lateral raises for width.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]
       },
       p3r1:{name:'Tempo Run',type:'run',dur:'30-35 min',dist:'3-3.5 miles',effort:'Mixed: Easy + Tempo',
@@ -380,7 +458,8 @@ const PHASES = [
           {id:'db_row',sets:4,reps:'8 ea',rest:75,int:'mod',rpe:'8',note:'Heavy dumbbell rows. Pull to hip, squeeze 1 sec at top.'},
           {id:'db_curl',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Strict curls. Every rep counts in the final phase.'},
           {id:'db_hammer',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Arm thickness builder.'},
-          {id:'trap_shrug',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Heavy shrugs for the yoke. Hold 2 sec at top.'}
+          {id:'trap_shrug',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Heavy shrugs for the yoke. Hold 2 sec at top.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]
       },
       p4legs:{
@@ -393,7 +472,8 @@ const PHASES = [
           {id:'db_split',sets:3,reps:'12 ea',rest:75,int:'mod',rpe:'8-9',note:'More reps than Phase 3. These should be brutal. Embrace it.'},
           {id:'db_rdl',sets:3,reps:'12',rest:60,int:'mod',rpe:'8',note:'Slow eccentric. Hamstrings should be on fire.'},
           {id:'db_calf',sets:4,reps:'20',rest:45,int:'light',rpe:'8',note:'20 reps. Full ROM. Calves need volume to grow.'},
-          {id:'farmer',sets:4,reps:'40 steps',rest:60,int:'mod',rpe:'8',note:'Heaviest farmer walks of the program. Walk like a tank.'}
+          {id:'farmer',sets:4,reps:'40 steps',rest:60,int:'mod',rpe:'8',note:'Heaviest farmer walks of the program. Walk like a tank.'},
+          {id:'plank',sets:3,reps:'45s',rest:45,int:'light',rpe:'7',note:'Core finisher. Hold for 30-60 seconds, focus on tight glutes and braced abs.'}
         ]
       },
       p4upper:{
@@ -408,7 +488,8 @@ const PHASES = [
           {id:'db_shoulder',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Lighter weight, feel the delts.'},
           {id:'db_lateral',sets:4,reps:'15',rest:45,int:'light',rpe:'8',note:'15 reps. The burn is the point.'},
           {id:'db_curl',sets:3,reps:'12',rest:45,int:'light',rpe:'7-8',note:'Arm volume. Slow and strict.'},
-          {id:'db_tri_oh',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Triceps volume to finish.'}
+          {id:'db_tri_oh',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Triceps volume to finish.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]
       },
       p4r1:{name:'Fartlek Run',type:'run',dur:'30-35 min',dist:'3-3.5 miles',effort:'Mixed: Easy + Hard',
@@ -451,7 +532,8 @@ const PHASES = [
           {id:'db_row',sets:4,reps:'8 ea',rest:75,int:'mod',rpe:'8',note:'Pull to hip, squeeze at top.'},
           {id:'db_curl',sets:3,reps:'10',rest:45,int:'mod',rpe:'7-8',note:'Strict form, full ROM.'},
           {id:'db_hammer',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Arm thickness.'},
-          {id:'trap_shrug',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Heavy shrugs. Build the yoke.'}
+          {id:'trap_shrug',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Heavy shrugs. Build the yoke.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]},
       p5_legs:{name:'Legs',focus:'Full Legs',dur:'50-55 min',
         warmup:'5 min jog, squats, leg swings, hip circles, glute bridges',
@@ -462,7 +544,8 @@ const PHASES = [
           {id:'db_split',sets:3,reps:'10 ea',rest:75,int:'mod',rpe:'8',note:'Single leg strength.'},
           {id:'db_rdl',sets:3,reps:'12',rest:60,int:'mod',rpe:'7-8',note:'Hamstring focus.'},
           {id:'db_calf',sets:4,reps:'20',rest:45,int:'light',rpe:'8',note:'High rep calves.'},
-          {id:'farmer',sets:3,reps:'40 steps',rest:60,int:'mod',rpe:'8',note:'Heavy carries.'}
+          {id:'farmer',sets:3,reps:'40 steps',rest:60,int:'mod',rpe:'8',note:'Heavy carries.'},
+          {id:'plank',sets:3,reps:'45s',rest:45,int:'light',rpe:'7',note:'Core finisher. Hold for 30-60 seconds, focus on tight glutes and braced abs.'}
         ]},
       p5_arms:{name:'Arms & Shoulders',focus:'Biceps, Triceps, Delts',dur:'45-50 min',
         warmup:'5 min jog, arm circles, light shoulder press warm-up',
@@ -474,7 +557,8 @@ const PHASES = [
           {id:'db_hammer',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Builds brachialis \u2014 makes arms look thick from every angle.'},
           {id:'db_tri_oh',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Long head. Deep stretch at bottom.'},
           {id:'db_skull',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Lateral head. Lock upper arms in place.'},
-          {id:'trap_shrug',sets:3,reps:'12',rest:45,int:'mod',rpe:'7',note:'Trap volume for the yoke.'}
+          {id:'trap_shrug',sets:3,reps:'12',rest:45,int:'mod',rpe:'7',note:'Trap volume for the yoke.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]},
       p5_upper:{name:'Upper Volume',focus:'Full Upper Pump',dur:'50-55 min',
         warmup:'5 min jog, arm circles, push-ups, light warm-up set',
@@ -523,7 +607,8 @@ const PHASES = [
           {id:'db_row',sets:4,reps:'8 ea',rest:75,int:'mod',rpe:'8',note:'Heavy rows.'},
           {id:'db_curl',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Strict. 3 sec negative on every rep.'},
           {id:'db_hammer',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Arm thickness.'},
-          {id:'trap_shrug',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Heavy. Hold 2 sec at top.'}
+          {id:'trap_shrug',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Heavy. Hold 2 sec at top.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]},
       p6_legs:{name:'Legs',focus:'Full Legs',dur:'50-55 min',
         warmup:'5 min jog, squats, leg swings, hip circles',cooldown:'Stretch legs \u2014 5 min.',
@@ -534,7 +619,8 @@ const PHASES = [
           {id:'db_rdl',sets:3,reps:'12',rest:60,int:'mod',rpe:'8',note:'Hamstring growth.'},
           {id:'db_lunge',sets:3,reps:'10 ea',rest:60,int:'mod',rpe:'7-8',note:'Walking lunges for legs and glutes.'},
           {id:'db_calf',sets:4,reps:'20',rest:45,int:'light',rpe:'8',note:'Calves need volume.'},
-          {id:'farmer',sets:3,reps:'40 steps',rest:60,int:'mod',rpe:'8',note:'Heavy carries.'}
+          {id:'farmer',sets:3,reps:'40 steps',rest:60,int:'mod',rpe:'8',note:'Heavy carries.'},
+          {id:'plank',sets:3,reps:'45s',rest:45,int:'light',rpe:'7',note:'Core finisher. Hold for 30-60 seconds, focus on tight glutes and braced abs.'}
         ]},
       p6_arms:{name:'Arms & Shoulders',focus:'Biceps, Triceps, Delts',dur:'50-55 min',
         warmup:'5 min jog, arm circles, light press warm-up',cooldown:'Stretch shoulders, arms \u2014 5 min.',
@@ -545,7 +631,8 @@ const PHASES = [
           {id:'db_hammer',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Brachialis = arm thickness.'},
           {id:'db_tri_oh',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Overhead for long head.'},
           {id:'db_skull',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Lateral head.'},
-          {id:'db_fly',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Bonus chest isolation.'}
+          {id:'db_fly',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Bonus chest isolation.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]},
       p6_upper:{name:'Upper Volume',focus:'Full Upper Pump',dur:'50-55 min',
         warmup:'5 min jog, push-ups, light sets',cooldown:'Full upper stretch \u2014 5 min.',
@@ -616,7 +703,8 @@ const PHASES = [
           {id:'db_row',sets:3,reps:'8 ea',rest:75,int:'mod',rpe:'8',note:'Maintain back thickness.'},
           {id:'db_curl',sets:3,reps:'10',rest:45,int:'mod',rpe:'8',note:'Keep the arm size.'},
           {id:'db_hammer',sets:3,reps:'10',rest:45,int:'mod',rpe:'7',note:'Arm maintenance.'},
-          {id:'trap_shrug',sets:3,reps:'10',rest:45,int:'mod',rpe:'7',note:'Trap maintenance.'}
+          {id:'trap_shrug',sets:3,reps:'10',rest:45,int:'mod',rpe:'7',note:'Trap maintenance.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]},
       p9_legs:{name:'Legs',focus:'Full Legs',dur:'45-50 min',
         warmup:'5 min jog, squats, leg swings, hip circles',cooldown:'Stretch \u2014 5 min.',
@@ -626,7 +714,8 @@ const PHASES = [
           {id:'db_split',sets:3,reps:'10 ea',rest:75,int:'mod',rpe:'8',note:'Single leg work.'},
           {id:'db_rdl',sets:3,reps:'10',rest:60,int:'mod',rpe:'7-8',note:'Hamstrings.'},
           {id:'db_calf',sets:3,reps:'20',rest:45,int:'light',rpe:'8',note:'Calves.'},
-          {id:'farmer',sets:3,reps:'40 steps',rest:60,int:'mod',rpe:'7',note:'Core and grip.'}
+          {id:'farmer',sets:3,reps:'40 steps',rest:60,int:'mod',rpe:'7',note:'Core and grip.'},
+          {id:'plank',sets:3,reps:'45s',rest:45,int:'light',rpe:'7',note:'Core finisher. Hold for 30-60 seconds, focus on tight glutes and braced abs.'}
         ]},
       p9_upper:{name:'Upper',focus:'Full Upper Maintenance',dur:'45-50 min',
         warmup:'5 min jog, arm circles, push-ups',cooldown:'Stretch \u2014 5 min.',
@@ -637,7 +726,8 @@ const PHASES = [
           {id:'db_shoulder',sets:3,reps:'10',rest:60,int:'mod',rpe:'7',note:'Shoulders.'},
           {id:'db_lateral',sets:3,reps:'15',rest:45,int:'light',rpe:'8',note:'Keep the width.'},
           {id:'db_curl',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Arm maintenance.'},
-          {id:'db_tri_oh',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Tricep maintenance.'}
+          {id:'db_tri_oh',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Tricep maintenance.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]},
       p9_tempo:{name:'Tempo Run',type:'run',dur:'30-35 min',dist:'3-3.5 miles',effort:'Mixed',
         desc:'Tempo intervals are back. Higher EPOC = more fat burned at rest for hours after. You know how to execute these from Phase 3.',
@@ -676,7 +766,8 @@ const PHASES = [
           {id:'db_shoulder',sets:3,reps:'8',rest:75,int:'mod',rpe:'8',note:'Heavy press.'},
           {id:'db_curl',sets:3,reps:'10',rest:45,int:'mod',rpe:'8',note:'Arm maintenance.'},
           {id:'db_lateral',sets:3,reps:'15',rest:45,int:'light',rpe:'8',note:'Width maintenance.'},
-          {id:'db_tri_oh',sets:3,reps:'10',rest:45,int:'mod',rpe:'7',note:'Tricep maintenance.'}
+          {id:'db_tri_oh',sets:3,reps:'10',rest:45,int:'mod',rpe:'7',note:'Tricep maintenance.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]},
       p11_legs:{name:'Legs',focus:'Full Legs',dur:'45-50 min',
         warmup:'5 min jog, squats, leg swings, hip circles',cooldown:'Stretch \u2014 5 min.',
@@ -685,7 +776,8 @@ const PHASES = [
           {id:'db_goblet',sets:3,reps:'10',rest:60,int:'mod',rpe:'8',note:'Leg maintenance.'},
           {id:'db_split',sets:3,reps:'10 ea',rest:75,int:'mod',rpe:'8',note:'Single leg strength.'},
           {id:'db_rdl',sets:3,reps:'10',rest:60,int:'mod',rpe:'7-8',note:'Hamstrings.'},
-          {id:'db_calf',sets:3,reps:'20',rest:45,int:'light',rpe:'8',note:'Calves.'}
+          {id:'db_calf',sets:3,reps:'20',rest:45,int:'light',rpe:'8',note:'Calves.'},
+          {id:'plank',sets:3,reps:'45s',rest:45,int:'light',rpe:'7',note:'Core finisher. Hold for 30-60 seconds, focus on tight glutes and braced abs.'}
         ]},
       p11_upper_v:{name:'Upper Volume',focus:'Pump & Maintain',dur:'40-45 min',
         warmup:'5 min jog, arm circles, push-ups',cooldown:'Stretch \u2014 5 min.',
@@ -695,7 +787,8 @@ const PHASES = [
           {id:'db_lateral',sets:4,reps:'15',rest:45,int:'light',rpe:'8',note:'Shoulder width.'},
           {id:'db_curl',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Arm pump.'},
           {id:'db_hammer',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Arm thickness.'},
-          {id:'db_skull',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Tricep pump.'}
+          {id:'db_skull',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Tricep pump.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]},
       p11_tempo:{name:'Tempo Run',type:'run',dur:'30-35 min',dist:'3-3.5 miles',effort:'Mixed',
         desc:'Tempo intervals. Maximum EPOC. You\'re a runner \u2014 this is your weapon for fat burning.',
@@ -816,8 +909,17 @@ const S = {
   _p:'ir_',
   get(k){ try{return JSON.parse(localStorage.getItem(this._p+k))}catch(e){return null} },
   set(k,v){ localStorage.setItem(this._p+k,JSON.stringify(v)) },
-  get startDate(){ const d=this.get('start'); return d?new Date(d):null; },
-  set startDate(d){ this.set('start',d.toISOString()); },
+  get startDate(){
+    const d=this.get('start'); if(!d) return null;
+    // v2 format: "YYYY-MM-DD" local date string
+    if(typeof d==='string' && /^\d{4}-\d{2}-\d{2}$/.test(d)){
+      const [y,m,day]=d.split('-').map(Number);
+      return new Date(y,m-1,day);
+    }
+    // v1 format: ISO UTC string — parse and migrate to local-date form on next setter call
+    return new Date(d);
+  },
+  set startDate(d){ this.set('start', d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')); },
   get profile(){ return this.get('profile')||{}; },
   set profile(v){ this.set('profile',v); },
   get completed(){ return this.get('done')||{}; },
@@ -907,26 +1009,55 @@ function calcNutri(weight, liftD, runD, mode){
   return result;
 }
 
-// ---- PROGRESSIVE WEIGHTS ----
-function lastWeightEntry(exId){
-  // Search backwards through sessions for last recorded weight
-  const today = norm(new Date());
-  for(let i=0;i<180;i++){
-    const d=new Date(today); d.setDate(d.getDate()-i);
+// ---- PROGRESSION LOGIC (double progression based on set completion) ----
+// Small step = smallest meaningful jump for the exercise
+function stepFor(ex){
+  if(!ex) return 5;
+  if(ex.equip && (ex.equip.toLowerCase().includes('trap bar')||ex.equip.toLowerCase().includes('machine'))) return 5;
+  if(ex.unit==='each') return 2.5;
+  return 5;
+}
+
+// Scan sessions backward (up to 180 days). For each past occurrence of exId,
+// return the most recent BEFORE `beforeDate`, with weight and set-completion ratio.
+function lastAttempt(exId, beforeDate){
+  const start = norm(beforeDate || new Date());
+  for(let i=1;i<180;i++){
+    const d=new Date(start); d.setDate(d.getDate()-i);
     const ses=S.session(ds(d));
-    if(ses.wts && ses.wts[exId]) return { weight:ses.wts[exId], date:ds(d) };
+    const wt=ses && ses.wts && ses.wts[exId];
+    const sets=ses && ses.sets && ses.sets[exId];
+    if(wt){
+      const setCount = Array.isArray(sets) ? sets.length : 0;
+      const doneCount = Array.isArray(sets) ? sets.filter(Boolean).length : 0;
+      return { weight:wt, date:ds(d), setCount, doneCount };
+    }
   }
   return null;
 }
-function targetWeight(exId){
+
+// Given the last attempt, recommend the next target weight using double progression:
+//   all sets completed -> bump weight by one small step
+//   most sets completed (>= 50%) -> hold weight, retry
+//   fewer than 50% completed, or no sets checked -> drop one small step
+function suggestNext(exId){
   const ex=EX[exId]; if(!ex) return null;
-  const last=lastWeightEntry(exId);
-  if(!last) return { weight:ex.defaultBase, isDefault:true, inc:0, unit:ex.unit };
-  // If last entry was within 5 days, suggest same weight
-  const daysSince = Math.round((norm(new Date()) - new Date(last.date+'T00:00:00')) / 864e5);
-  if(daysSince < 5) return { weight:last.weight, isDefault:false, inc:0, unit:ex.unit };
-  // Otherwise, suggest progression
-  return { weight:last.weight + ex.inc, isDefault:false, inc:ex.inc, prev:last.weight, unit:ex.unit };
+  const last = lastAttempt(exId, new Date());
+  if(!last) return { weight:ex.defaultBase, label:'start', last:null, unit:ex.unit };
+  const step = stepFor(ex);
+  const { weight, setCount, doneCount } = last;
+  if(setCount > 0 && doneCount >= setCount){
+    return { weight: weight + step, label:'bump', last, step, unit:ex.unit };
+  }
+  if(setCount === 0){
+    // Weight was entered last time but no sets were checked — assume stale / unrecorded.
+    // Default to holding weight; user can override.
+    return { weight, label:'hold', last, step, unit:ex.unit };
+  }
+  if(doneCount / setCount >= 0.5){
+    return { weight, label:'hold', last, step, unit:ex.unit };
+  }
+  return { weight: Math.max(0, weight - step), label:'drop', last, step, unit:ex.unit };
 }
 
 // ---- LIFT PR TRACKING ----
@@ -977,7 +1108,7 @@ const Plans = {
 
 // ---- APP ----
 const App = {
-  tab:'today', woff:0, ntab:'today',
+  tab:'today', woff:0, ntab:'simple',
 
   init(){
     // Auto-clear stale data from old app versions
@@ -1062,9 +1193,10 @@ const App = {
 
     w.exercises.forEach(ex=>{
       const info=EX[ex.id], sets=ses.sets&&ses.sets[ex.id]||[], wt=ses.wts&&ses.wts[ex.id]||'';
-      const tgt=targetWeight(ex.id), n=parseInt(ex.sets);
+      const tgt=suggestNext(ex.id), n=parseInt(ex.sets);
       const intCls = ex.int==='heavy'?'int-heavy':ex.int==='light'?'int-light':'int-mod';
       const intLbl = ex.int==='heavy'?'HEAVY':ex.int==='light'?'LIGHT':'MODERATE';
+      const unitLbl = tgt && tgt.unit==='each' ? 'lbs ea' : 'lbs';
 
       h+=`<div class="exercise">
         <div class="exercise-header">
@@ -1078,14 +1210,17 @@ const App = {
         </div>
         <div class="exercise-note">${ex.note}</div>`;
 
-      // Target weight row
+      // Target weight row \u2014 double progression based on last session's set completion
       if(tgt){
-        if(tgt.isDefault){
-          h+=`<div class="target-row"><span class="target-wt">Suggested start: ~${tgt.weight} ${tgt.unit==='each'?'lbs ea':'lbs'}</span></div>`;
-        } else if(tgt.inc > 0){
-          h+=`<div class="target-row"><span class="target-wt">Target: ${tgt.weight} ${tgt.unit==='each'?'ea':''}</span> <span class="target-inc">\u2191${tgt.inc} from ${tgt.prev}</span></div>`;
-        } else {
-          h+=`<div class="target-row"><span class="target-wt">Last: ${tgt.weight} ${tgt.unit==='each'?'lbs ea':'lbs'}</span></div>`;
+        if(tgt.label==='start'){
+          h+=`<div class="target-row"><span class="target-wt">Suggested start: ~${tgt.weight} ${unitLbl}</span></div>`;
+        } else if(tgt.label==='bump'){
+          h+=`<div class="target-row"><span class="target-wt">Target: ${tgt.weight} ${unitLbl}</span> <span class="target-inc">\u2191${tgt.step} \u2014 you hit all ${tgt.last.setCount} sets at ${tgt.last.weight}</span></div>`;
+        } else if(tgt.label==='hold'){
+          const lastNote = tgt.last.setCount>0 ? `Hold \u2014 last: ${tgt.last.doneCount}/${tgt.last.setCount} sets at ${tgt.last.weight}` : `Hold \u2014 last entry: ${tgt.last.weight}`;
+          h+=`<div class="target-row"><span class="target-wt">Target: ${tgt.weight} ${unitLbl}</span> <span class="target-inc" style="color:var(--muted)">${lastNote}</span></div>`;
+        } else if(tgt.label==='drop'){
+          h+=`<div class="target-row"><span class="target-wt">Target: ${tgt.weight} ${unitLbl}</span> <span class="target-inc" style="color:var(--danger)">\u2193${tgt.step} \u2014 regroup from ${tgt.last.weight}</span></div>`;
         }
       }
 
@@ -1153,13 +1288,114 @@ const App = {
     const dayType=w?(w.type==='lift'?'lift':w.type==='run'?'run':'rest'):'rest';
 
     let h=`<div class="sub-tabs">
+      <button class="sub-tab${this.ntab==='simple'?' active':''}" data-st="simple">Simple</button>
+      <button class="sub-tab${this.ntab==='supps'?' active':''}" data-st="supps">Supps</button>
       <button class="sub-tab${this.ntab==='today'?' active':''}" data-st="today">Today</button>
       <button class="sub-tab${this.ntab==='macros'?' active':''}" data-st="macros">Macros</button>
       <button class="sub-tab${this.ntab==='grocery'?' active':''}" data-st="grocery">Grocery</button>
       <button class="sub-tab${this.ntab==='tips'?' active':''}" data-st="tips">Tips</button>
     </div>`;
 
-    if(this.ntab==='today'){
+    if(this.ntab==='simple'){
+      const pTarget = Math.round(wt);
+      h+=`<div class="card">
+        <div class="section-title">Simple Eating (No Tracking)</div>
+        <p style="font-size:13px;line-height:1.5;margin-bottom:12px">Skip the spreadsheets. These rules get you 90% of the way there without tracking a calorie.</p>
+        <ul class="tip-list">
+          <li><strong>Protein:</strong> ~${pTarget}g per day (your bodyweight in lbs). Hit 4 protein doses of 25–40g each.</li>
+          <li><strong>Carbs:</strong> heavier around lifts (rice, toast, fruit). Lighter on rest days.</li>
+          <li><strong>Fat:</strong> don't fear it. Eggs, cheese, avocado, olive oil. ~${Math.round(wt*0.4)}g/day.</li>
+          <li><strong>Veggies:</strong> at dinner, every day. Frozen is fine.</li>
+          <li><strong>Water:</strong> 120+ oz. More on lift days.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="section-title">Cut Day Template (your style)</div>
+        <div class="meal"><div class="meal-time">Breakfast</div><div class="meal-name">Protein Shake</div><div class="meal-note">1 scoop whey + water or milk + coffee. ~25g P.</div></div>
+        <div class="meal"><div class="meal-time">Lunch</div><div class="meal-name">Skip, or light</div><div class="meal-note">Tuna packet + Frank's Red Hot (no rice). ~17g P. Or just skip entirely.</div></div>
+        <div class="meal"><div class="meal-time">Dinner</div><div class="meal-name">Family Meal + Lean Protein</div><div class="meal-note">Whatever's for dinner + 6oz of chicken/steak/fish. Eat normally with family.</div></div>
+        <div class="meal"><div class="meal-time">If dying at night</div><div class="meal-name">Optional Snack</div><div class="meal-note">Cottage cheese, second shake, or Greek yogurt. Never skip protein.</div></div>
+      </div>
+      <div class="card">
+        <div class="section-title">Build Day Template (lift days)</div>
+        <div class="meal"><div class="meal-time">Breakfast</div><div class="meal-name">3 Eggs + Toast + Cheese</div><div class="meal-note">~35g P. Carbs for the lift ahead.</div></div>
+        <div class="meal"><div class="meal-time">Lunch</div><div class="meal-name">Tuna Rice Bowl</div><div class="meal-note">Tuna packet + 1 cup rice + Frank's + sliced avocado. ~40g P.</div></div>
+        <div class="meal"><div class="meal-time">Pre-workout</div><div class="meal-name">Banana or Rice Cake</div><div class="meal-note">Small carb hit ~30–60 min before lifting.</div></div>
+        <div class="meal"><div class="meal-time">Post-workout</div><div class="meal-name">Whey Shake</div><div class="meal-note">1 scoop (25g P) with 5g creatine + 10g collagen. Your daily supp dose.</div></div>
+        <div class="meal"><div class="meal-time">Dinner</div><div class="meal-name">Family Meal + Protein</div><div class="meal-note">Normal dinner. Steak when you have time. Chicken or fish otherwise.</div></div>
+      </div>
+      <div class="card">
+        <div class="section-title">Protein Cheat Sheet (your foods)</div>
+        <div class="list-item"><div><div class="nm">Tuna packet (2.6 oz)</div></div><div class="ds">17g</div></div>
+        <div class="list-item"><div><div class="nm">3 eggs</div></div><div class="ds">18g</div></div>
+        <div class="list-item"><div><div class="nm">1 cup cottage cheese</div></div><div class="ds">25g</div></div>
+        <div class="list-item"><div><div class="nm">1 scoop whey</div></div><div class="ds">25g</div></div>
+        <div class="list-item"><div><div class="nm">6 oz cooked steak</div></div><div class="ds">45g</div></div>
+        <div class="list-item"><div><div class="nm">1 cup Greek yogurt</div></div><div class="ds">20g</div></div>
+      </div>
+      <div class="card">
+        <div class="section-title">Adderall Timing</div>
+        <ul class="tip-list">
+          <li>Eat breakfast BEFORE Adderall kicks in (~20 min window).</li>
+          <li>Liquid calories (shake) bypass appetite suppression mid-day.</li>
+          <li>Dinner is your feast — appetite returns as it wears off.</li>
+          <li>Weekends (if skipping Adderall): eat more to make up any deficit.</li>
+        </ul>
+      </div>`;
+    }
+    else if(this.ntab==='supps'){
+      h+=`<div class="card">
+        <div class="section-title">Creatine Monohydrate</div>
+        <div style="font-size:13px;line-height:1.6;margin-bottom:8px"><strong style="color:var(--success)">Take it daily.</strong> Most studied supplement in sports science.</div>
+        <ul class="tip-list">
+          <li><strong>Dose:</strong> 3–5g/day. No loading phase needed — saturation arrives in 2–4 weeks either way.</li>
+          <li><strong>When:</strong> any time, with or without food. Mixing into your protein shake is perfect.</li>
+          <li><strong>Safety:</strong> 30+ years of research. Kidney/liver concerns are myths in healthy adults. No stomach issues at 3–5g.</li>
+          <li><strong>Benefits:</strong> ~5–10% strength, muscle fullness (intracellular water), emerging cognitive benefits.</li>
+          <li><strong>Buy:</strong> ON Micronized or BulkSupplements — <strong>$15–25 for 6+ months</strong>. Skip "HCL", "ethyl ester", or "buffered" variants — no better, much more expensive.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="section-title">Whey Protein</div>
+        <div style="font-size:13px;line-height:1.6;margin-bottom:8px"><strong style="color:var(--success)">Concentrate is fine.</strong> Isolate is a luxury, not a requirement.</div>
+        <ul class="tip-list">
+          <li><strong>Target:</strong> 1–2 scoops (25–50g) per day to fill protein gaps.</li>
+          <li><strong>Concentrate vs isolate:</strong> concentrate (70–80% protein) is fine for 99% of people. Isolate (90%+) only worth extra $ if lactose-intolerant or cutting hard. Hydrolyzed is marketing.</li>
+          <li><strong>Good value:</strong> ON Gold Standard, Dymatize Elite, NOW Sports — ~$0.70–1.00 per serving.</li>
+          <li><strong>Skip:</strong> mass gainers, proprietary blends, anything with "test boost" claims.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="section-title">Collagen Peptides</div>
+        <div style="font-size:13px;line-height:1.6;margin-bottom:8px"><strong style="color:var(--success)">Probably worth it.</strong> Moderate evidence for joint and tendon support — relevant for a former marathoner.</div>
+        <ul class="tip-list">
+          <li><strong>Dose:</strong> 10–15g/day with vitamin C (OJ or tablet) to aid synthesis.</li>
+          <li><strong>Gelatin vs peptides:</strong> same protein. Peptides dissolve in cold liquid. Gelatin needs hot liquid but costs half as much.</li>
+          <li><strong>Best value:</strong> store-brand collagen peptides (Costco, Amazon Solimo) ~$0.50/scoop. Vital Proteins works too — you're paying for the label.</li>
+          <li><strong>Caveat:</strong> collagen is an incomplete protein (low in tryptophan). Count it as supplemental, not toward your daily protein target.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="section-title">Skip These</div>
+        <ul class="tip-list">
+          <li><strong>BCAAs / EAAs:</strong> redundant if protein target is hit.</li>
+          <li><strong>Testosterone boosters:</strong> none work. Sleep and lifting heavy does.</li>
+          <li><strong>Fat burners:</strong> caffeine + placebo + stimulants. Coffee is cheaper.</li>
+          <li><strong>Pre-workout:</strong> caffeine (100–200mg) + beta-alanine are the only active parts. Coffee + your creatine scoop = the same effect at $0.50.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="section-title">Your Daily Stack</div>
+        <ul class="tip-list">
+          <li><strong>Every day:</strong> 5g creatine + 10g collagen in your protein shake, splash of OJ.</li>
+          <li><strong>Post-lift:</strong> whey scoop (25g).</li>
+          <li><strong>As needed:</strong> second shake if protein target is short.</li>
+          <li><strong>Optional:</strong> Vit D3 3000–5000 IU with fat (most people are deficient). Fish oil 2–3g EPA+DHA for joint/heart.</li>
+          <li style="color:var(--muted)"><strong>Monthly cost:</strong> ~$35–50 total.</li>
+        </ul>
+      </div>`;
+    }
+    else if(this.ntab==='today'){
       const td=n.days[dayType];
       h+=`<div class="card"><span class="day-type day-type-${dayType}">${td.label}</span>
         <div style="margin-top:8px"><div style="font-size:24px;font-weight:800">${td.cal.toLocaleString()} cal</div>
@@ -1311,7 +1547,7 @@ const App = {
     const cb=document.getElementById('complete-btn');
     if(cb)cb.addEventListener('click',()=>{const d=ds(norm(new Date()));S.setDone(d,!S.completed[d]);this.render();});
 
-    // Set buttons
+    // Set buttons — fire rest timer after EVERY set marked done (including the last)
     document.querySelectorAll('.set-btn').forEach(b=>b.addEventListener('click',()=>{
       const exId=b.dataset.exid,si=parseInt(b.dataset.set),d=ds(norm(new Date())),ses=S.session(d);
       if(!ses.sets)ses.sets={};if(!ses.sets[exId])ses.sets[exId]=[];
@@ -1320,8 +1556,8 @@ const App = {
       b.classList.toggle('done');
       if(b.classList.contains('done')){
         b.classList.add('pop');setTimeout(()=>b.classList.remove('pop'),300);
-        const row=b.closest('.sets-row'),all=row.querySelectorAll('.set-btn'),rb=row.querySelector('.rest-btn');
-        if(rb&&!Array.from(all).every(x=>x.classList.contains('done')))this.startTimer(parseInt(rb.dataset.rest));
+        const row=b.closest('.sets-row'),rb=row.querySelector('.rest-btn');
+        if(rb) this.startTimer(parseInt(rb.dataset.rest));
       }
     }));
 
@@ -1350,22 +1586,52 @@ const App = {
     if(rb)rb.addEventListener('click',()=>{if(confirm('Reset your entire program? This clears ALL progress. Saved plans are kept.')){Plans.reset();this.render();}});
   },
 
-  // ---- TIMER ----
+  // ---- TIMER (persistent top banner — non-blocking) ----
   _timer:null, _ts:0,
-  startTimer(sec){
-    this._ts=sec;
-    const ov=document.getElementById('overlay');ov.classList.remove('hidden');
-    ov.innerHTML=`<div class="overlay-content" style="text-align:center"><div class="timer-label">REST</div><div class="timer-display" id="t-num">${sec}</div><button class="timer-skip" id="t-skip">Skip</button></div>`;
-    document.getElementById('t-skip').addEventListener('click',()=>this.stopTimer());
-    ov.addEventListener('click',e=>{if(e.target===ov)this.stopTimer();});
-    if(this._timer)clearInterval(this._timer);
-    this._timer=setInterval(()=>{
-      this._ts--;const el=document.getElementById('t-num');if(el)el.textContent=this._ts;
-      if(this._ts<=0){this.beep();this.stopTimer();}
-    },1000);
+  getSettings(){ return S.get('settings') || { restEnabled:true, restSound:true }; },
+  saveSettings(s){ S.set('settings', s); },
+  ensureBanner(){
+    let b = document.getElementById('rest-banner');
+    if(b) return b;
+    b = document.createElement('div');
+    b.id = 'rest-banner';
+    b.className = 'rest-banner hidden';
+    b.innerHTML = `
+      <span class="rb-label">REST</span>
+      <span class="rb-num" id="rb-num">0</span>
+      <button class="rb-add" id="rb-add">+30s</button>
+      <button class="rb-skip" id="rb-skip">Skip</button>`;
+    document.body.appendChild(b);
+    b.querySelector('#rb-skip').addEventListener('click', ()=>this.stopTimer());
+    b.querySelector('#rb-add').addEventListener('click', ()=>{ this._ts += 30; this.renderBanner(); });
+    return b;
   },
-  stopTimer(){if(this._timer)clearInterval(this._timer);this._timer=null;document.getElementById('overlay').classList.add('hidden');},
-  beep(){try{const c=new(window.AudioContext||window.webkitAudioContext),o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=880;g.gain.value=0.3;o.connect(g);g.connect(c.destination);o.start();setTimeout(()=>{o.stop();c.close();},300);}catch(e){}},
+  renderBanner(){
+    const b = this.ensureBanner();
+    const el = document.getElementById('rb-num');
+    if(el) el.textContent = this._ts + 's';
+    b.classList.remove('hidden');
+  },
+  startTimer(sec){
+    const settings = this.getSettings();
+    if(!settings.restEnabled) return;
+    this._ts = sec;
+    this.renderBanner();
+    if(this._timer) clearInterval(this._timer);
+    this._timer = setInterval(()=>{
+      this._ts--;
+      const el = document.getElementById('rb-num');
+      if(el) el.textContent = this._ts + 's';
+      if(this._ts <= 0){ if(settings.restSound) this.beep(); this.stopTimer(); }
+    }, 1000);
+  },
+  stopTimer(){
+    if(this._timer) clearInterval(this._timer);
+    this._timer = null;
+    const b = document.getElementById('rest-banner');
+    if(b) b.classList.add('hidden');
+  },
+  beep(){ try{ const c=new(window.AudioContext||window.webkitAudioContext),o=c.createOscillator(),g=c.createGain(); o.type='sine'; o.frequency.value=880; g.gain.value=0.3; o.connect(g); g.connect(c.destination); o.start(); setTimeout(()=>{o.stop();c.close();},300); if(navigator.vibrate) navigator.vibrate(200); }catch(e){} },
 
   // ---- EXERCISE INFO ----
   showExInfo(id){
@@ -1375,7 +1641,7 @@ const App = {
       <h3>${ex.name}</h3>
       <div class="muscle-tags">${ex.primary.map(m=>`<span class="muscle-tag">${m}</span>`).join('')}${ex.secondary.map(m=>`<span class="muscle-tag" style="opacity:.6">${m}</span>`).join('')}</div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:8px">${ex.equip}</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Weight: ${ex.unit==='each'?'per dumbbell':'total loaded'} \u00b7 Progress: +${ex.inc} lbs/week</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Weight: ${ex.unit==='each'?'per dumbbell':'total loaded'} \u00b7 Progress: double progression \u2014 hit all prescribed sets to earn +${stepFor(ex)} lbs next time</div>
       <a href="${ex.yt}" target="_blank" class="yt-link" style="margin-bottom:12px">\u25b6 Watch Form Demo on YouTube</a>
       <ol class="form-steps">${ex.form.map(s=>`<li>${s}</li>`).join('')}</ol>
       <button class="close-btn" id="close-ov">Got it</button>
@@ -1423,6 +1689,16 @@ const App = {
     } else {
       h+=`<div style="font-size:13px;color:var(--muted);margin-bottom:12px">No active plan. Set one up from the Today tab.</div>`;
     }
+
+    // Rest timer settings
+    const set = this.getSettings();
+    h+=`<div class="section-title">Rest Timer</div>
+      <div class="settings-row">
+        <label><input type="checkbox" id="set-rest-enabled" ${set.restEnabled?'checked':''}> Auto-start rest timer after each set</label>
+      </div>
+      <div class="settings-row">
+        <label><input type="checkbox" id="set-rest-sound" ${set.restSound?'checked':''}> Beep + vibrate when timer ends</label>
+      </div>`;
 
     // Save current plan
     if(hasData){
@@ -1494,6 +1770,19 @@ const App = {
         this.render();
       }
     });
+
+    // Rest timer settings
+    const restEn = document.getElementById('set-rest-enabled');
+    const restSnd = document.getElementById('set-rest-sound');
+    const persist = ()=>{
+      const s = this.getSettings();
+      s.restEnabled = restEn.checked;
+      s.restSound = restSnd.checked;
+      this.saveSettings(s);
+      if(!s.restEnabled) this.stopTimer();
+    };
+    if(restEn) restEn.addEventListener('change', persist);
+    if(restSnd) restSnd.addEventListener('change', persist);
   }
 };
 

@@ -347,3 +347,53 @@ input:focus,select:focus { outline:none; border-color:var(--primary); }
 @media (min-width:481px) {
     #app { border-left:1px solid var(--border); border-right:1px solid var(--border); }
 }
+
+/* Rest banner — persistent, non-blocking countdown */
+.rest-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    padding-top: calc(10px + env(safe-area-inset-top, 0px));
+    background: var(--primary);
+    color: #000;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+.rest-banner.hidden { display: none; }
+.rb-label { font-size: 11px; letter-spacing: 2px; opacity: 0.7; }
+.rb-num { font-size: 20px; font-weight: 800; flex: 1; text-align: center; font-variant-numeric: tabular-nums; }
+.rb-add, .rb-skip {
+    padding: 6px 12px;
+    background: rgba(0,0,0,0.2);
+    color: #000;
+    border: 1px solid rgba(0,0,0,0.3);
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Settings rows in Plans menu */
+.settings-row {
+    padding: 8px 0;
+    font-size: 13px;
+}
+.settings-row label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    color: var(--text);
+}
+.settings-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
