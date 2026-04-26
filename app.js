@@ -281,7 +281,7 @@ const PHASES = [
   // ========== PHASE 2: BUILDING (Weeks 5-8) ==========
   {
     id:2, name:'Building', tag:'Upper-Focus Split', weeks:4, liftDays:3, runDays:3, mode:'recomp',
-    desc:'Upper-body focused split designed for a former elite marathoner: legs are already strong, upper body needs to catch up. Three lift days \u2014 two pure upper sessions plus a full-body day that handles posterior chain via trap bar. The second leg day is replaced by a running interval workout (legs are still trained, just via a tool you\'re built for).',
+    desc:'Upper-body focused split designed for a former elite marathoner: legs are already strong, upper body needs to catch up. Three lift days \u2014 two pure upper sessions plus a full-body day that handles posterior chain via trap bar. The second leg day is replaced by a flexible cardio day (your choice of modality) with optional light upper accessories.',
     prog:'DOUBLE PROGRESSION: the app tracks your last session per exercise. Hit all prescribed sets at a weight, the next session suggests +one step (DB +2.5, trap bar/machine +5). Miss sets? It holds or drops weight. No arbitrary weekly increases \u2014 your real performance drives progression.',
     schedule:[
       {type:'lift',wk:'p2ua'}, {type:'lift',wk:'p2fb'}, {type:'run',wk:'p2r1'}, {type:'lift',wk:'p2ub'}, {type:'run',wk:'p2r3'}, {type:'run',wk:'p2r2'}, {type:'rest'}
@@ -335,9 +335,16 @@ const PHASES = [
       p2r2:{name:'Trail Run',type:'run',dur:'35-50 min',dist:'3-4 miles',effort:'Easy',
         desc:'Saturday trail run. Mental reset for the week. Three running days plus the trap-bar work in the full-body session means your legs are getting plenty of stimulus \u2014 they just don\'t need a dedicated weight session.',
         details:['Pace: easy, enjoy the trail','Poles if you want them','~350-450 calories burned, mostly from fat','Goal: aerobic maintenance + mental health + fat burning']},
-      p2r3:{name:'Intervals',type:'run',dur:'25-30 min',dist:'2.5-3 miles',effort:'Mixed: Easy + Hard',
-        desc:'Replaces what used to be your second leg day. You\'re a former elite marathoner \u2014 running intervals is something your body is wired for, and 5\u00d72 min hard hits your quads, glutes, and calves more than enough to maintain leg size while you focus on closing the upper-body gap. Big metabolic stimulus too.',
-        details:['Warm up: 8 min easy','Main: 5\u00d72 min hard (5K-10K effort) / 90 sec easy jog between','Cool down: 5 min easy','EPOC effect \u2014 elevated calorie burn for hours after','Counts as your "second leg day" \u2014 sprinting is leg work']}
+      p2r3:{name:'Cardio (+ Optional Light Upper)',type:'run',dur:'30-45 min',dist:'flexible',effort:'Easy to Moderate',
+        desc:'Replaces what used to be your second leg day. Pick whichever cardio modality you feel like \u2014 the goal is steady aerobic work, not a hard session. If you have energy at the end, tack on a few sets of light upper accessories (rear delts, lateral raises, curls). Skip them without guilt \u2014 you\'ve already had 3 upper sessions this week.',
+        details:[
+          'Cardio (pick one): easy run 30-40 min Zone 2',
+          'Cardio option: trail walk with poles 35-45 min',
+          'Cardio option: treadmill incline walk (8-12% grade, ~3 mph) 30-40 min \u2014 great for fat burn, easy on legs',
+          'Cardio option: stationary bike or rower 25-35 min easy steady',
+          'Optional upper finisher (only if you feel good, 8-12 min): 3\u00d712 lateral raises, 3\u00d712 face pulls, 3\u00d712 DB curls',
+          'Skip the finisher if your upper is fried from the week. Recovery beats junk volume.'
+        ]}
     }
   },
 
