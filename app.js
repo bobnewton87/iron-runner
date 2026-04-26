@@ -280,11 +280,11 @@ const PHASES = [
 
   // ========== PHASE 2: BUILDING (Weeks 5-8) ==========
   {
-    id:2, name:'Building', tag:'Upper-Focus Split', weeks:4, liftDays:3, runDays:3, mode:'recomp',
-    desc:'Upper-body focused split designed for a former elite marathoner: legs are already strong, upper body needs to catch up. Three lift days \u2014 two pure upper sessions plus a full-body day that handles posterior chain via trap bar. The second leg day is replaced by a flexible cardio day (your choice of modality) with optional light upper accessories.',
+    id:2, name:'Building', tag:'Upper-Focus Split', weeks:4, liftDays:4, runDays:2, mode:'recomp',
+    desc:'Upper-body focused split designed for a former elite marathoner: legs are already strong, upper body needs to catch up. Four lift days \u2014 two pure upper sessions, one full-body day (heavy trap-bar + upper volume), and one Arms & Shoulders day that hammers your priority muscles (lateral delts, triceps, biceps). Two cardio days plus one rest.',
     prog:'DOUBLE PROGRESSION: the app tracks your last session per exercise. Hit all prescribed sets at a weight, the next session suggests +one step (DB +2.5, trap bar/machine +5). Miss sets? It holds or drops weight. No arbitrary weekly increases \u2014 your real performance drives progression.',
     schedule:[
-      {type:'lift',wk:'p2ua'}, {type:'lift',wk:'p2fb'}, {type:'run',wk:'p2r1'}, {type:'lift',wk:'p2ub'}, {type:'run',wk:'p2r3'}, {type:'run',wk:'p2r2'}, {type:'rest'}
+      {type:'lift',wk:'p2ua'}, {type:'lift',wk:'p2fb'}, {type:'run',wk:'p2r1'}, {type:'lift',wk:'p2ub'}, {type:'lift',wk:'p2_arms'}, {type:'run',wk:'p2r2'}, {type:'rest'}
     ],
     workouts:{
       p2ua:{
@@ -341,16 +341,19 @@ const PHASES = [
       p2r2:{name:'Trail Run',type:'run',dur:'35-50 min',dist:'3-4 miles',effort:'Easy',
         desc:'Saturday trail run. Mental reset for the week. Three running days plus the trap-bar work in the full-body session means your legs are getting plenty of stimulus \u2014 they just don\'t need a dedicated weight session.',
         details:['Pace: easy, enjoy the trail','Poles if you want them','~350-450 calories burned, mostly from fat','Goal: aerobic maintenance + mental health + fat burning']},
-      p2r3:{name:'Cardio (+ Optional Light Upper)',type:'run',dur:'30-45 min',dist:'flexible',effort:'Easy to Moderate',
-        desc:'Replaces what used to be your second leg day. Pick whichever cardio modality you feel like \u2014 the goal is steady aerobic work, not a hard session. If you have energy at the end, tack on a few sets of light upper accessories (rear delts, lateral raises, curls). Skip them without guilt \u2014 you\'ve already had 3 upper sessions this week.',
-        details:[
-          'Cardio (pick one): easy run 30-40 min Zone 2',
-          'Cardio option: trail walk with poles 35-45 min',
-          'Cardio option: treadmill incline walk (8-12% grade, ~3 mph) 30-40 min \u2014 great for fat burn, easy on legs',
-          'Cardio option: stationary bike or rower 25-35 min easy steady',
-          'Optional upper finisher (only if you feel good, 8-12 min): 3\u00d712 lateral raises, 3\u00d712 face pulls, 3\u00d712 DB curls',
-          'Skip the finisher if your upper is fried from the week. Recovery beats junk volume.'
-        ]}
+      p2_arms:{
+        name:'Arms & Shoulders', focus:'Lateral Delts + Arms', dur:'40-50 min',
+        warmup:'5 min: jog or jump rope, arm circles, light shoulder press warm-up set',
+        cooldown:'Stretch shoulders, biceps, triceps \u2014 5 min.',
+        exercises:[
+          {id:'db_shoulder',sets:3,reps:'8',rest:75,int:'mod',rpe:'7-8',note:'Heavy shoulder press to anchor the day. Seated, strict form.'},
+          {id:'db_lateral',sets:4,reps:'12',rest:45,int:'light',rpe:'8',note:'4 sets of laterals \u2014 wide-shoulder priority. Slight forward lean, light weight, strict form.'},
+          {id:'db_curl',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Strict curls. 3 sec negative.'},
+          {id:'db_skull',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Triceps \u2014 your weak point. Lower to forehead, extend up.'},
+          {id:'tri_pushdown',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Cable pushdowns. Lock elbows in, full extension. Second tricep movement of the day.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Posture and rear-delt insurance. Rope to face, external rotation at top.'}
+        ]
+      }
     }
   },
 
