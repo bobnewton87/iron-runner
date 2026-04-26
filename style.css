@@ -261,6 +261,31 @@ body {
 .day-info .dw { font-size:14px; font-weight:600; }
 .day-info .dd { font-size:12px; color:var(--muted); }
 .day-check { font-size:18px; color:var(--success); }
+.day-card.swapped { border-style:dashed; }
+.swap-glyph { color:var(--primary); font-size:13px; margin-left:4px; }
+
+/* Day swap row (Today header) */
+.swap-row {
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    margin:6px 0 14px; font-size:12px;
+}
+.swap-day-btn, .swap-cancel-btn {
+    color:var(--primary); cursor:pointer; user-select:none;
+    border:1px solid var(--border); border-radius:var(--rs);
+    padding:4px 10px; background:var(--card);
+}
+.swap-day-btn:active, .swap-cancel-btn:active { border-color:var(--primary); }
+.swap-status { color:var(--muted); }
+
+/* Swap modal options */
+.swap-option {
+    padding:12px; margin-bottom:6px; cursor:pointer;
+    background:var(--card); border:1px solid var(--border); border-radius:var(--rs);
+    display:flex; justify-content:space-between; align-items:center;
+}
+.swap-option:active { border-color:var(--primary); }
+.swap-option-date { font-weight:600; font-size:14px; }
+.swap-option-label { font-size:12px; color:var(--muted); }
 
 /* Program */
 .phase-card {

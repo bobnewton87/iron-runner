@@ -288,7 +288,7 @@ const PHASES = [
     ],
     workouts:{
       p2ua:{
-        name:'Upper A', focus:'Chest & Back', dur:'40-45 min',
+        name:'Upper A', focus:'Chest & Back', dur:'45-55 min',
         warmup:'5 min: jump rope or jog, arm circles, 10 push-ups, light set of bench',
         cooldown:'Stretch chest, lats, shoulders \u2014 5 min.',
         exercises:[
@@ -296,13 +296,16 @@ const PHASES = [
           {id:'db_row',sets:4,reps:'8 ea',rest:75,int:'mod',rpe:'7-8',note:'Match or exceed your bench weight. Back can handle more than you think.'},
           {id:'db_incline',sets:3,reps:'10',rest:60,int:'mod',rpe:'7',note:'Lighter than flat bench. Focus on the upper chest squeeze at top.'},
           {id:'db_shoulder',sets:3,reps:'10',rest:60,int:'mod',rpe:'7',note:'Building those boulder shoulders. Seated, controlled.'},
+          {id:'db_lateral',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Wide-shoulder builder. Light weight, strict form, slight forward lean.'},
           {id:'db_curl',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Heavier than Phase 1. Still strict form.'},
           {id:'db_tri_oh',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'One dumbbell, both hands. Feel the deep stretch.'},
-          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
+          {id:'tri_pushdown',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Second tricep movement \u2014 triceps are 2/3 of arm size. Cable or band. Lock elbows in, full extension.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'},
+          {id:'hang_knee',sets:3,reps:'10-12',rest:45,int:'light',rpe:'7',note:'Ab finisher. Hang from bar, raise knees to chest with control. Six-pack hypertrophy.'}
         ]
       },
       p2fb:{
-        name:'Full Body (Upper Focus)', focus:'Posterior Chain + Heavy Upper', dur:'45-50 min',
+        name:'Full Body (Upper Focus)', focus:'Posterior Chain + Heavy Upper', dur:'50-60 min',
         warmup:'5 min: jog, arm circles, leg swings, 10 push-ups, 1 light deadlift set',
         cooldown:'Stretch chest, lats, hamstrings \u2014 5 min.',
         exercises:[
@@ -310,13 +313,15 @@ const PHASES = [
           {id:'db_bench',sets:4,reps:'8',rest:75,int:'mod',rpe:'7-8',note:'Extra chest volume for the week. Heavy.'},
           {id:'db_row',sets:4,reps:'8 ea',rest:75,int:'mod',rpe:'7-8',note:'Extra back volume. Match or beat your bench weight.'},
           {id:'db_shoulder',sets:3,reps:'10',rest:60,int:'mod',rpe:'7',note:'Build the shoulders. Strict press.'},
+          {id:'db_lateral',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Second lateral session of the week \u2014 wide-shoulder priority.'},
           {id:'db_split',sets:2,reps:'10 ea',rest:60,int:'mod',rpe:'7',note:'Light leg maintenance \u2014 only 2 sets. Your legs already do the work on every run.'},
           {id:'db_curl',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Arm volume.'},
+          {id:'db_skull',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Triceps \u2014 added because you\'re self-reportedly weak there. Lower to forehead, extend up, slow on the way down.'},
           {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Posture and rear-delt insurance. Pull rope to face, external rotation at top.'}
         ]
       },
       p2ub:{
-        name:'Upper B', focus:'Shoulders & Arms', dur:'40-45 min',
+        name:'Upper B', focus:'Shoulders & Arms', dur:'45-55 min',
         warmup:'5 min: jump rope or jog, arm circles, 10 push-ups',
         cooldown:'Stretch chest, shoulders, triceps \u2014 5 min.',
         exercises:[
@@ -325,8 +330,9 @@ const PHASES = [
           {id:'db_bench',sets:3,reps:'10',rest:60,int:'mod',rpe:'7',note:'Lighter than Upper A. Chase the chest pump.'},
           {id:'db_lateral',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'These build the wide-shoulder look. Still light weight.'},
           {id:'db_hammer',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Neutral grip. Builds forearms and arm thickness.'},
-          {id:'db_skull',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'New exercise. Lower to temples, extend up. Great tricep builder.'},
-          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
+          {id:'db_skull',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Lower to temples, extend up. Great tricep builder.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'},
+          {id:'hang_knee',sets:3,reps:'10-12',rest:45,int:'light',rpe:'7',note:'Ab finisher. Six-pack hypertrophy work.'}
         ]
       },
       p2r1:{name:'Easy Run',type:'run',dur:'25-30 min',dist:'3 miles',effort:'Zone 2',
@@ -382,11 +388,12 @@ const PHASES = [
           {id:'db_curl',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Strict form. No ego lifting. 3 sec negative.'},
           {id:'db_hammer',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Builds arm thickness from every angle.'},
           {id:'trap_shrug',sets:3,reps:'12',rest:45,int:'mod',rpe:'7',note:'Heavy shrugs. Hold 2 sec at top. Builds the yoke.'},
-          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'},
+          {id:'hang_knee',sets:3,reps:'10-12',rest:45,int:'light',rpe:'7',note:'Ab finisher. Hang from bar, raise knees to chest with control.'}
         ]
       },
       p3fb:{
-        name:'Full Body (Upper Focus)', focus:'Heavy Compound + Upper Volume', dur:'45-50 min',
+        name:'Full Body (Upper Focus)', focus:'Heavy Compound + Upper Volume', dur:'50-55 min',
         warmup:'5 min: jog, arm circles, leg swings, 1 light deadlift set',
         cooldown:'Stretch upper body, hamstrings, hips \u2014 5 min.',
         exercises:[
@@ -394,6 +401,7 @@ const PHASES = [
           {id:'db_incline',sets:4,reps:'8',rest:75,int:'mod',rpe:'8',note:'Heavy upper chest. Build pressing strength.'},
           {id:'trap_row',sets:4,reps:'8',rest:75,int:'mod',rpe:'8',note:'Heavy back. Match or beat the press weights.'},
           {id:'db_shoulder',sets:3,reps:'10',rest:60,int:'mod',rpe:'7-8',note:'Shoulder volume.'},
+          {id:'db_lateral',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Third lateral session of the week \u2014 wide-shoulder priority.'},
           {id:'db_split',sets:2,reps:'10 ea',rest:60,int:'mod',rpe:'7',note:'Two sets only \u2014 leg maintenance.'},
           {id:'db_hammer',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Arm thickness.'},
           {id:'db_skull',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Triceps for arm size.'},
@@ -412,7 +420,9 @@ const PHASES = [
           {id:'db_shoulder',sets:3,reps:'10',rest:60,int:'mod',rpe:'7',note:'Shoulders getting rounder by the week.'},
           {id:'db_curl',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Arm work to close out.'},
           {id:'db_lateral',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Cap off with lateral raises for width.'},
-          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
+          {id:'tri_pushdown',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Tricep volume — bring weekly tris to mid-range. Lock elbows in, full extension.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'},
+          {id:'hang_knee',sets:3,reps:'10-12',rest:45,int:'light',rpe:'7',note:'Ab finisher. Six-pack hypertrophy.'}
         ]
       },
       p3r1:{name:'Tempo Run',type:'run',dur:'30-35 min',dist:'3-3.5 miles',effort:'Mixed: Easy + Tempo',
@@ -444,7 +454,8 @@ const PHASES = [
           {id:'db_decline',sets:3,reps:'10',rest:60,int:'mod',rpe:'7',note:'Volume for lower chest. Round out the full chest.'},
           {id:'db_lateral',sets:4,reps:'12',rest:45,int:'light',rpe:'8',note:'4 sets now. Light weight, burn should be intense by set 4.'},
           {id:'db_tri_oh',sets:3,reps:'12',rest:45,int:'light',rpe:'7-8',note:'Stretch and squeeze. Feel the tricep long head working.'},
-          {id:'db_skull',sets:3,reps:'12',rest:45,int:'light',rpe:'7-8',note:'Finish the triceps. Slow negatives.'}
+          {id:'db_skull',sets:3,reps:'12',rest:45,int:'light',rpe:'7-8',note:'Finish the triceps. Slow negatives.'},
+          {id:'tri_pushdown',sets:3,reps:'12',rest:45,int:'light',rpe:'7-8',note:'Cable pushdowns to bias the lateral head. Tricep priority — keep the volume mid-range every phase.'}
         ]
       },
       p4pull:{
@@ -458,7 +469,8 @@ const PHASES = [
           {id:'db_curl',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Strict curls. Every rep counts in the final phase.'},
           {id:'db_hammer',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Arm thickness builder.'},
           {id:'trap_shrug',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Heavy shrugs for the yoke. Hold 2 sec at top.'},
-          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'},
+          {id:'hang_knee',sets:3,reps:'10-12',rest:45,int:'light',rpe:'7',note:'Ab finisher.'}
         ]
       },
       p4fb:{
@@ -473,7 +485,8 @@ const PHASES = [
           {id:'db_split',sets:2,reps:'10 ea',rest:60,int:'mod',rpe:'7',note:'Light leg maintenance \u2014 2 sets is plenty.'},
           {id:'db_curl',sets:3,reps:'10',rest:45,int:'mod',rpe:'8',note:'Strict, heavy curls.'},
           {id:'db_skull',sets:3,reps:'10',rest:45,int:'mod',rpe:'8',note:'Heavy triceps.'},
-          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Posture work.'}
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Posture work.'},
+          {id:'hang_knee',sets:3,reps:'10-12',rest:45,int:'light',rpe:'7',note:'Ab finisher.'}
         ]
       },
       p4upper:{
@@ -533,7 +546,8 @@ const PHASES = [
           {id:'db_curl',sets:3,reps:'10',rest:45,int:'mod',rpe:'7-8',note:'Strict form, full ROM.'},
           {id:'db_hammer',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Arm thickness.'},
           {id:'trap_shrug',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Heavy shrugs. Build the yoke.'},
-          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'},
+          {id:'hang_knee',sets:3,reps:'10-12',rest:45,int:'light',rpe:'7',note:'Ab finisher.'}
         ]},
       p5_fb:{name:'Full Body (Upper Focus)',focus:'Heavy Compound + Upper Volume',dur:'50-55 min',
         warmup:'5 min jog, arm circles, leg swings, 1-2 warm-up sets',
@@ -572,7 +586,8 @@ const PHASES = [
           {id:'db_shoulder',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Shoulder volume.'},
           {id:'db_lateral',sets:3,reps:'15',rest:45,int:'light',rpe:'8',note:'More lateral raises. Always.'},
           {id:'db_curl',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Arm volume.'},
-          {id:'db_tri_oh',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Tricep volume.'}
+          {id:'db_tri_oh',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Tricep volume.'},
+          {id:'hang_knee',sets:3,reps:'10-12',rest:45,int:'light',rpe:'7',note:'Ab finisher.'}
         ]},
       p5_trail:{name:'Trail Run',type:'run',dur:'35-50 min',dist:'3-4 miles',effort:'Easy',
         desc:'One run per week during bulk. Keep it easy. This maintains your cardio, burns some fat to keep the bulk lean, and is good for your head.',
@@ -609,7 +624,8 @@ const PHASES = [
           {id:'db_curl',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Strict. 3 sec negative on every rep.'},
           {id:'db_hammer',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Arm thickness.'},
           {id:'trap_shrug',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Heavy. Hold 2 sec at top.'},
-          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'},
+          {id:'hang_knee',sets:3,reps:'10-12',rest:45,int:'light',rpe:'7',note:'Ab finisher.'}
         ]},
       p6_fb:{name:'Full Body (Upper Focus)',focus:'Heavy Compound + Upper Power',dur:'50-55 min',
         warmup:'5 min jog, arm circles, leg swings, 2 warm-up sets',cooldown:'Stretch upper \u2014 5 min.',
@@ -645,7 +661,8 @@ const PHASES = [
           {id:'db_shoulder',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Shoulder pump.'},
           {id:'db_lateral',sets:4,reps:'15',rest:45,int:'light',rpe:'8',note:'Always more laterals.'},
           {id:'db_curl',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Arm pump.'},
-          {id:'db_skull',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Tricep pump.'}
+          {id:'db_skull',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Tricep pump.'},
+          {id:'hang_knee',sets:3,reps:'10-12',rest:45,int:'light',rpe:'7',note:'Ab finisher.'}
         ]},
       p6_trail:{name:'Trail Run',type:'run',dur:'35-50 min',dist:'3-4 miles',effort:'Easy',
         desc:'Weekly run. Keep the bulk lean. Enjoy the trail.',
@@ -694,7 +711,8 @@ const PHASES = [
           {id:'db_shoulder',sets:3,reps:'10',rest:60,int:'mod',rpe:'8',note:'Maintain shoulder strength.'},
           {id:'db_lateral',sets:3,reps:'15',rest:45,int:'light',rpe:'8',note:'Keep hitting laterals.'},
           {id:'db_tri_oh',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Tricep maintenance.'},
-          {id:'db_skull',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Tricep finisher.'}
+          {id:'db_skull',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Tricep finisher.'},
+          {id:'tri_pushdown',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Cable pushdowns — extra tricep volume to preserve arm size during the cut.'}
         ]},
       p9_pull:{name:'Pull',focus:'Back, Biceps, Traps',dur:'45-50 min',
         warmup:'5 min jog, arm circles, 2 warm-up deadlift sets',cooldown:'Stretch \u2014 5 min.',
@@ -705,7 +723,9 @@ const PHASES = [
           {id:'db_curl',sets:3,reps:'10',rest:45,int:'mod',rpe:'8',note:'Keep the arm size.'},
           {id:'db_hammer',sets:3,reps:'10',rest:45,int:'mod',rpe:'7',note:'Arm maintenance.'},
           {id:'trap_shrug',sets:3,reps:'10',rest:45,int:'mod',rpe:'7',note:'Trap maintenance.'},
-          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
+          {id:'db_lateral',sets:3,reps:'15',rest:45,int:'light',rpe:'8',note:'Lateral delts — keep the width through the cut.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'},
+          {id:'hang_knee',sets:3,reps:'10-12',rest:45,int:'light',rpe:'7',note:'Ab finisher.'}
         ]},
       p9_fb:{name:'Full Body (Upper Focus)',focus:'Heavy Maintenance',dur:'45-50 min',
         warmup:'5 min jog, arm circles, leg swings',cooldown:'Stretch \u2014 5 min.',
@@ -716,7 +736,8 @@ const PHASES = [
           {id:'db_shoulder',sets:3,reps:'8',rest:75,int:'mod',rpe:'8',note:'Maintain shoulders.'},
           {id:'db_split',sets:2,reps:'10 ea',rest:60,int:'mod',rpe:'7',note:'Leg maintenance \u2014 2 sets.'},
           {id:'db_curl',sets:3,reps:'10',rest:45,int:'mod',rpe:'7',note:'Arm maintenance.'},
-          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Posture work.'}
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Posture work.'},
+          {id:'hang_knee',sets:3,reps:'10-12',rest:45,int:'light',rpe:'7',note:'Ab finisher.'}
         ]},
       p9_upper:{name:'Upper',focus:'Full Upper Maintenance',dur:'45-50 min',
         warmup:'5 min jog, arm circles, push-ups',cooldown:'Stretch \u2014 5 min.',
@@ -768,7 +789,9 @@ const PHASES = [
           {id:'db_curl',sets:3,reps:'10',rest:45,int:'mod',rpe:'8',note:'Arm maintenance.'},
           {id:'db_lateral',sets:3,reps:'15',rest:45,int:'light',rpe:'8',note:'Width maintenance.'},
           {id:'db_tri_oh',sets:3,reps:'10',rest:45,int:'mod',rpe:'7',note:'Tricep maintenance.'},
-          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
+          {id:'db_skull',sets:3,reps:'10',rest:45,int:'mod',rpe:'7',note:'Second tricep movement — preserve arm size at peak shred.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'},
+          {id:'hang_knee',sets:3,reps:'10-12',rest:45,int:'light',rpe:'7',note:'Ab finisher.'}
         ]},
       p11_fb:{name:'Full Body (Upper Focus)',focus:'Heavy Maintenance',dur:'45-50 min',
         warmup:'5 min jog, arm circles, leg swings',cooldown:'Stretch \u2014 5 min.',
@@ -790,7 +813,9 @@ const PHASES = [
           {id:'db_curl',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Arm pump.'},
           {id:'db_hammer',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Arm thickness.'},
           {id:'db_skull',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Tricep pump.'},
-          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
+          {id:'tri_pushdown',sets:3,reps:'12',rest:45,int:'light',rpe:'7',note:'Cable pushdowns to keep weekly tricep volume mid-range.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'},
+          {id:'hang_knee',sets:3,reps:'10-12',rest:45,int:'light',rpe:'7',note:'Ab finisher.'}
         ]},
       p11_tempo:{name:'Tempo Run',type:'run',dur:'30-35 min',dist:'3-3.5 miles',effort:'Mixed',
         desc:'Tempo intervals. Maximum EPOC. You\'re a runner \u2014 this is your weapon for fat burning.',
@@ -930,7 +955,12 @@ const S = {
   saveSession(ds,d){ this.set('s_'+ds,d); },
   get weightLog(){ return this.get('wlog')||[]; },
   addWeight(date,w){ const l=this.weightLog; const i=l.findIndex(e=>e.d===date); if(i>=0)l[i].w=w; else l.push({d:date,w:w}); l.sort((a,b)=>a.d.localeCompare(b.d)); this.set('wlog',l); },
-  delWeight(date){ this.set('wlog',this.weightLog.filter(e=>e.d!==date)); }
+  delWeight(date){ this.set('wlog',this.weightLog.filter(e=>e.d!==date)); },
+  // Day swaps: bidirectional map { 'YYYY-MM-DD': 'YYYY-MM-DD' } — both directions stored for O(1) lookup
+  get daySwaps(){ return this.get('swaps')||{}; },
+  set daySwaps(v){ this.set('swaps',v); },
+  addSwap(a,b){ const s=this.daySwaps; s[a]=b; s[b]=a; this.daySwaps=s; },
+  clearSwap(date){ const s=this.daySwaps; const partner=s[date]; if(partner) delete s[partner]; delete s[date]; this.daySwaps=s; }
 };
 
 // ---- UTILITIES ----
@@ -952,16 +982,21 @@ function phaseFor(date){
 }
 function workoutFor(date){
   const pi=phaseFor(date); if(!pi)return null;
-  // Day offset from start date — plan always starts on Day 1 regardless of weekday
-  const diff=Math.round((norm(date)-norm(S.startDate))/864e5);
+  // If this date is part of a day-swap, look up the OTHER date's workout content
+  // (display phase stays as the actual date's phase via `pi`).
+  const dStr=ds(norm(date));
+  const swappedTo=S.daySwaps[dStr];
+  const lookupDate = swappedTo ? new Date(swappedTo+'T00:00:00') : date;
+  const lookupPi = swappedTo ? (phaseFor(lookupDate) || pi) : pi;
+  const diff=Math.round((norm(lookupDate)-norm(S.startDate))/864e5);
   const dayIdx=((diff%7)+7)%7;
-  const e=pi.phase.schedule[dayIdx];
-  if(!e||e.type==='rest')return{type:'rest',pi};
+  const e=lookupPi.phase.schedule[dayIdx];
+  if(!e||e.type==='rest')return{type:'rest',pi,swappedFrom:swappedTo?dStr:null,swappedTo};
   // Look up workout in current phase first, then search all phases (allows cross-phase references)
-  let w=pi.phase.workouts[e.wk];
+  let w=lookupPi.phase.workouts[e.wk];
   if(!w) for(const p of PHASES){ if(p.workouts&&p.workouts[e.wk]){w=p.workouts[e.wk];break;} }
-  if(!w) return{type:'rest',pi};
-  return{...w,type:e.type,pi};
+  if(!w) return{type:'rest',pi,swappedFrom:swappedTo?dStr:null,swappedTo};
+  return{...w,type:e.type,pi,swappedFrom:swappedTo?dStr:null,swappedTo};
 }
 
 // ---- BODY COMPOSITION ----
@@ -1268,6 +1303,7 @@ const App = {
     const wl=S.weightLog, cw=wl.length?wl[wl.length-1].w:(S.profile.currentWt||0);
     const n=cw?calcNutri(cw,pi.phase.liftDays,pi.phase.runDays,pi.phase.mode):null, m=n?n.days.rest:null;
     return`<div class="today-date">${fmt(date)}</div><div class="today-phase">Phase ${pi.phase.id} \u00b7 Week ${pi.wip}</div>
+    ${this.swapBar(date)}
     <div class="rest-hero"><h2>Rest Day</h2><p>Recovery is when muscle actually grows. Your body is repairing and building right now. Stay active with a walk or easy 20-min jog if you want, but no lifting.</p></div>
     ${m?`<div class="card"><div class="section-title">Today's Targets</div><span class="day-type day-type-rest">Rest Day</span><div style="margin-top:8px"><div style="font-size:20px;font-weight:800">${m.cal.toLocaleString()} cal</div><div style="font-size:12px;color:var(--muted)">${m.protein}g protein \u00b7 ${m.carbs}g carbs \u00b7 ${m.fat}g fat</div></div></div>`:''}
     <div class="card"><div class="section-title">Recovery Checklist</div><ul class="tip-list"><li>Hit your protein target (${m?m.protein+'g':'~165g'}) \u2014 muscles can\'t recover without it</li><li>Stay hydrated \u2014 120+ oz water</li><li>Stretch or foam roll anything that\'s sore</li><li>7-8 hours sleep tonight (growth hormone peaks during deep sleep)</li><li>Take your creatine (every day, even rest days)</li><li>Optional: easy 20-min jog or walk for active recovery + extra fat burning</li></ul></div>`;
@@ -1277,6 +1313,7 @@ const App = {
     const d=ds(date),done=S.completed[d],wl=S.weightLog,cw=wl.length?wl[wl.length-1].w:(S.profile.currentWt||0);
     const n=cw?calcNutri(cw,w.pi.phase.liftDays,w.pi.phase.runDays,w.pi.phase.mode):null,m=n?n.days.run:null;
     return`<div class="today-date">${fmt(date)}</div><div class="today-phase">Phase ${w.pi.phase.id} \u00b7 Week ${w.pi.wip}</div>
+    ${this.swapBar(date)}
     <div class="today-title">${w.name}</div><div style="font-size:13px;color:var(--run);font-weight:600;margin-bottom:4px">${w.dist} \u00b7 ${w.dur}</div>
     ${m?`<div style="margin-bottom:16px"><span class="day-type day-type-run">Run Day</span> <span style="font-size:12px;color:var(--muted)">${m.cal.toLocaleString()} cal \u00b7 ${m.protein}g protein</span></div>`:''}
     <div class="card"><p style="font-size:13px;line-height:1.5;margin-bottom:12px">${w.desc}</p>${w.details.map(t=>`<div style="padding:5px 0;font-size:13px;color:var(--muted)">\u2192 ${t}</div>`).join('')}</div>
@@ -1287,6 +1324,7 @@ const App = {
     const d=ds(date),ses=S.session(d),done=S.completed[d],wl=S.weightLog,cw=wl.length?wl[wl.length-1].w:(S.profile.currentWt||0);
     const n=cw?calcNutri(cw,w.pi.phase.liftDays,w.pi.phase.runDays,w.pi.phase.mode):null,m=n?n.days.lift:null;
     let h=`<div class="today-date">${fmt(date)}</div><div class="today-phase">Phase ${w.pi.phase.id} \u00b7 Week ${w.pi.wip}</div>
+    ${this.swapBar(date)}
     <div class="today-title">${w.name}</div><div class="today-focus">${w.focus} \u00b7 ${w.dur}</div>
     ${m?`<div style="margin-bottom:12px"><span class="day-type day-type-lift">Lift Day</span> <span style="font-size:12px;color:var(--muted)">${m.cal.toLocaleString()} cal \u00b7 ${m.protein}g protein</span></div>`:''}
     <div class="wc"><strong>Warm Up</strong>${w.warmup}</div>`;
@@ -1371,13 +1409,15 @@ const App = {
     let h=`<div class="week-nav"><button data-dir="-1">\u2190 Prev</button><span>${s1} \u2013 ${s2}</span><button data-dir="1">Next \u2192</button></div>`;
     dates.forEach((d,i)=>{
       const dd=ds(d),w=S.startDate?workoutFor(d):null,isT=dd===today,isD=done[dd];
+      const isSwapped = !!(S.daySwaps && S.daySwaps[dd]);
       let badge='',nm='',det='';
       if(!w||!S.startDate){nm='Not Started';}
       else if(!phaseFor(d)){nm='Program Complete';}
       else if(w.type==='rest'){nm='Rest Day';det='Recovery + nutrition';}
       else if(w.type==='lift'){badge='<span class="badge badge-lift">LIFT</span>';nm=w.name;det=w.focus+' \u00b7 '+w.dur;}
       else if(w.type==='run'){badge='<span class="badge badge-run">RUN</span>';nm=w.name;det=w.dist+' \u00b7 '+w.effort;}
-      h+=`<div class="day-card${isT?' today':''}${isD?' completed':''}" data-date="${dd}"><div class="day-date"><div class="dow">${dn[i]}</div><div class="dom">${d.getDate()}</div></div><div class="day-info"><div class="dw">${nm} ${badge}</div><div class="dd">${det}</div></div>${isD?'<div class="day-check">\u2713</div>':''}</div>`;
+      const swapMark = isSwapped ? ' <span class="swap-glyph" title="swapped">\u2194</span>' : '';
+      h+=`<div class="day-card${isT?' today':''}${isD?' completed':''}${isSwapped?' swapped':''}" data-date="${dd}"><div class="day-date"><div class="dow">${dn[i]}</div><div class="dom">${d.getDate()}</div></div><div class="day-info"><div class="dw">${nm} ${badge}${swapMark}</div><div class="dd">${det}</div></div>${isD?'<div class="day-check">\u2713</div>':''}</div>`;
     });
     return h;
   },
@@ -1759,6 +1799,9 @@ const App = {
     document.querySelectorAll('.exercise-name').forEach(el=>el.addEventListener('click',()=>this.showExInfo(el.dataset.exid)));
     // Calendar day click
     document.querySelectorAll('.day-card').forEach(c=>c.addEventListener('click',()=>this.showDay(c.dataset.date)));
+    // Day swap buttons
+    document.querySelectorAll('.swap-day-btn').forEach(b=>b.addEventListener('click',()=>this.showSwapModal(b.dataset.date)));
+    document.querySelectorAll('.swap-cancel-btn').forEach(b=>b.addEventListener('click',()=>{S.clearSwap(b.dataset.date);this.render();}));
     // Log weight
     const lb=document.getElementById('log-btn');
     if(lb)lb.addEventListener('click',()=>{
@@ -1834,6 +1877,57 @@ const App = {
     </div>`;
     document.getElementById('close-ov').addEventListener('click',()=>ov.classList.add('hidden'));
     ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.add('hidden');});
+  },
+
+  // ---- DAY SWAP ----
+  swapBar(date){
+    const dStr = ds(norm(date));
+    const swappedTo = S.daySwaps[dStr];
+    if(swappedTo){
+      const [y,m,dd] = swappedTo.split('-').map(Number);
+      const partner = new Date(y, m-1, dd);
+      return `<div class="swap-row"><span class="swap-status">↔ Swapped with ${fmt(partner)}</span> <a class="swap-cancel-btn" data-date="${dStr}">Cancel swap</a></div>`;
+    }
+    return `<div class="swap-row"><a class="swap-day-btn" data-date="${dStr}">↔ Swap day</a></div>`;
+  },
+
+  showSwapModal(fromDate){
+    const ov = document.getElementById('overlay'); ov.classList.remove('hidden');
+    const today = norm(new Date());
+    const [fy,fm,fd] = fromDate.split('-').map(Number);
+    const fromD = new Date(fy, fm-1, fd);
+    const candidates = [];
+    for(let i = 1; i <= 6; i++){
+      const d = new Date(fromD); d.setDate(d.getDate() + i);
+      if(d < today) continue;
+      const dStr = ds(norm(d));
+      // skip days already swapped with someone other than fromDate
+      if(S.daySwaps[dStr] && S.daySwaps[dStr] !== fromDate) continue;
+      const w = workoutFor(d);
+      const label = !w ? 'Rest' : (w.type === 'rest' ? 'Rest' : (w.name || w.type));
+      candidates.push({ date: dStr, dateObj: d, label, type: w ? w.type : 'rest' });
+    }
+    let h = `<div class="overlay-content"><h3 style="margin-bottom:6px">Swap today's workout with…</h3>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Pick a day in the next 7 days. Today's workout moves to that day, and that day's workout moves here. Weekly lift and cardio counts stay the same.</div>`;
+    if(!candidates.length){
+      h += `<div style="font-size:13px;color:var(--muted);padding:12px 0">No swappable days in the next 7 days.</div>`;
+    } else {
+      candidates.forEach(c => {
+        h += `<div class="swap-option" data-from="${fromDate}" data-to="${c.date}">
+          <div class="swap-option-date">${fmt(c.dateObj)}</div>
+          <div class="swap-option-label">${c.label}</div>
+        </div>`;
+      });
+    }
+    h += `<button class="close-btn" id="close-ov" style="margin-top:16px">Cancel</button></div>`;
+    ov.innerHTML = h;
+    document.getElementById('close-ov').addEventListener('click',()=>ov.classList.add('hidden'));
+    ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.add('hidden');});
+    document.querySelectorAll('.swap-option').forEach(el => el.addEventListener('click', () => {
+      S.addSwap(el.dataset.from, el.dataset.to);
+      ov.classList.add('hidden');
+      this.render();
+    }));
   },
 
   // ---- DAY DETAIL (calendar) ----
