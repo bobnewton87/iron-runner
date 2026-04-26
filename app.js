@@ -280,11 +280,11 @@ const PHASES = [
 
   // ========== PHASE 2: BUILDING (Weeks 5-8) ==========
   {
-    id:2, name:'Building', tag:'Add Volume & Load', weeks:4, liftDays:4, runDays:2, mode:'recomp',
-    desc:'You\'re moving from base to workout phase. Upper/Lower split means more focus per muscle group. Four lifting days. Weights are going up. You\'ll start seeing real changes in the mirror.',
+    id:2, name:'Building', tag:'Upper-Focus Split', weeks:4, liftDays:3, runDays:3, mode:'recomp',
+    desc:'Upper-body focused split designed for a former elite marathoner: legs are already strong, upper body needs to catch up. Three lift days \u2014 two pure upper sessions plus a full-body day that handles posterior chain via trap bar. The second leg day is replaced by a running interval workout (legs are still trained, just via a tool you\'re built for).',
     prog:'DOUBLE PROGRESSION: the app tracks your last session per exercise. Hit all prescribed sets at a weight, the next session suggests +one step (DB +2.5, trap bar/machine +5). Miss sets? It holds or drops weight. No arbitrary weekly increases \u2014 your real performance drives progression.',
     schedule:[
-      {type:'lift',wk:'p2ua'}, {type:'lift',wk:'p2la'}, {type:'run',wk:'p2r1'}, {type:'lift',wk:'p2ub'}, {type:'lift',wk:'p2lb'}, {type:'run',wk:'p2r2'}, {type:'rest'}
+      {type:'lift',wk:'p2ua'}, {type:'lift',wk:'p2fb'}, {type:'run',wk:'p2r1'}, {type:'lift',wk:'p2ub'}, {type:'run',wk:'p2r3'}, {type:'run',wk:'p2r2'}, {type:'rest'}
     ],
     workouts:{
       p2ua:{
@@ -301,17 +301,18 @@ const PHASES = [
           {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]
       },
-      p2la:{
-        name:'Lower A', focus:'Posterior Chain', dur:'40-45 min',
-        warmup:'5 min: jog, bodyweight squats, leg swings, hip circles',
-        cooldown:'Stretch hamstrings, quads, hip flexors \u2014 5 min.',
+      p2fb:{
+        name:'Full Body (Upper Focus)', focus:'Posterior Chain + Heavy Upper', dur:'45-50 min',
+        warmup:'5 min: jog, arm circles, leg swings, 10 push-ups, 1 light deadlift set',
+        cooldown:'Stretch chest, lats, hamstrings \u2014 5 min.',
         exercises:[
-          {id:'trap_dl',sets:4,reps:'6',rest:120,int:'heavy',rpe:'8',note:'Going heavier, fewer reps. Should feel challenging by rep 5-6. Rest fully.'},
-          {id:'db_goblet',sets:3,reps:'10',rest:60,int:'mod',rpe:'7',note:'Heavier dumbbell. Depth over weight always.'},
-          {id:'db_lunge',sets:3,reps:'10 ea',rest:60,int:'mod',rpe:'7',note:'Walking or stationary. Dumbbells at sides.'},
-          {id:'db_rdl',sets:3,reps:'10',rest:60,int:'mod',rpe:'7',note:'Feel the hamstring stretch. 3 second negative on the way down.'},
-          {id:'farmer',sets:3,reps:'40 steps',rest:60,int:'mod',rpe:'7',note:'Load up the trap bar. Walk tall. Grip, core, everything.'},
-          {id:'plank',sets:3,reps:'45s',rest:45,int:'light',rpe:'7',note:'Core finisher. Hold for 30-60 seconds, focus on tight glutes and braced abs.'}
+          {id:'trap_dl',sets:3,reps:'6',rest:120,int:'heavy',rpe:'8',note:'Heavy compound covers your posterior chain (back, glutes, hams) AND traps. Replaces most of what a dedicated leg day would do. 3 sets only \u2014 we\'re saving volume for upper body.'},
+          {id:'db_bench',sets:4,reps:'8',rest:75,int:'mod',rpe:'7-8',note:'Extra chest volume for the week. Heavy.'},
+          {id:'db_row',sets:4,reps:'8 ea',rest:75,int:'mod',rpe:'7-8',note:'Extra back volume. Match or beat your bench weight.'},
+          {id:'db_shoulder',sets:3,reps:'10',rest:60,int:'mod',rpe:'7',note:'Build the shoulders. Strict press.'},
+          {id:'db_split',sets:2,reps:'10 ea',rest:60,int:'mod',rpe:'7',note:'Light leg maintenance \u2014 only 2 sets. Your legs already do the work on every run.'},
+          {id:'db_curl',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Arm volume.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Posture and rear-delt insurance. Pull rope to face, external rotation at top.'}
         ]
       },
       p2ub:{
@@ -328,35 +329,25 @@ const PHASES = [
           {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]
       },
-      p2lb:{
-        name:'Lower B', focus:'Quads & Calves', dur:'40-45 min',
-        warmup:'5 min: jog, bodyweight squats, leg swings, hip circles',
-        cooldown:'Stretch quads, hamstrings, calves \u2014 5 min.',
-        exercises:[
-          {id:'trap_dl',sets:3,reps:'8',rest:90,int:'mod',rpe:'7',note:'Moderate weight, more reps. Different stimulus than your earlier lower session.'},
-          {id:'db_split',sets:3,reps:'10 ea',rest:75,int:'mod',rpe:'7-8',note:'NEW: rear foot on bench. Tough but incredibly effective for legs.'},
-          {id:'db_step',sets:3,reps:'10 ea',rest:60,int:'mod',rpe:'7',note:'Step up onto bench. Drive through the top leg only.'},
-          {id:'db_calf',sets:3,reps:'15',rest:45,int:'light',rpe:'7',note:'High reps for calves. Full range of motion. Pause at top.'},
-          {id:'farmer',sets:3,reps:'40 steps',rest:60,int:'mod',rpe:'7',note:'Heavy. Stand tall. Builds everything.'},
-          {id:'plank',sets:3,reps:'45s',rest:45,int:'light',rpe:'7',note:'Core finisher. Hold for 30-60 seconds, focus on tight glutes and braced abs.'}
-        ]
-      },
       p2r1:{name:'Easy Run',type:'run',dur:'25-30 min',dist:'3 miles',effort:'Zone 2',
-        desc:'Mid-week recovery run. Your legs might be sore from your recent lower body session \u2014 that\'s normal. Running actually helps flush the soreness and accelerates recovery.',
+        desc:'Mid-week recovery run. Easy effort. Helps flush soreness from yesterday\'s deadlifts and keeps your aerobic engine humming.',
         details:['Pace: conversational, no watch-checking','If legs are trashed, walk-run is totally fine','Zone 2 running uses primarily fat as fuel','This is doing double duty: recovery + fat burning']},
       p2r2:{name:'Trail Run',type:'run',dur:'35-50 min',dist:'3-4 miles',effort:'Easy',
-        desc:'Saturday trail run. This is your mental reset for the week. You\'re lifting 4 days now \u2014 this run is important for balance.',
-        details:['Pace: easy, enjoy the trail','Poles if you want them','~350-450 calories burned, mostly from fat','Goal: aerobic maintenance + mental health + fat burning']}
+        desc:'Saturday trail run. Mental reset for the week. Three running days plus the trap-bar work in the full-body session means your legs are getting plenty of stimulus \u2014 they just don\'t need a dedicated weight session.',
+        details:['Pace: easy, enjoy the trail','Poles if you want them','~350-450 calories burned, mostly from fat','Goal: aerobic maintenance + mental health + fat burning']},
+      p2r3:{name:'Intervals',type:'run',dur:'25-30 min',dist:'2.5-3 miles',effort:'Mixed: Easy + Hard',
+        desc:'Replaces what used to be your second leg day. You\'re a former elite marathoner \u2014 running intervals is something your body is wired for, and 5\u00d72 min hard hits your quads, glutes, and calves more than enough to maintain leg size while you focus on closing the upper-body gap. Big metabolic stimulus too.',
+        details:['Warm up: 8 min easy','Main: 5\u00d72 min hard (5K-10K effort) / 90 sec easy jog between','Cool down: 5 min easy','EPOC effect \u2014 elevated calorie burn for hours after','Counts as your "second leg day" \u2014 sprinting is leg work']}
     }
   },
 
   // ========== PHASE 3: HYPERTROPHY (Weeks 9-12) ==========
   {
     id:3, name:'Hypertrophy', tag:'Grow & Shred', weeks:4, liftDays:4, runDays:2, mode:'recomp',
-    desc:'The quality phase \u2014 like tempo and threshold work in a marathon plan. Push/Pull/Legs split plus an upper day. Heavier weights, more volume. This is where visible muscle growth happens. Wednesday run upgrades to tempo intervals for better fat burning.',
+    desc:'The quality phase \u2014 like tempo and threshold work in a marathon plan. Push/Pull/Full-Body/Upper split: dedicated leg day is replaced with a full-body session that handles posterior chain via heavy trap bar. Heavier weights, more volume. Wednesday run upgrades to tempo intervals for better fat burning.',
     prog:'Push weight up on compounds when you hit all prescribed reps. Isolation exercises: chase the pump and burn. If the last 2 reps don\'t hurt, go heavier.',
     schedule:[
-      {type:'lift',wk:'p3push'}, {type:'lift',wk:'p3pull'}, {type:'run',wk:'p3r1'}, {type:'lift',wk:'p3legs'}, {type:'lift',wk:'p3upper'}, {type:'run',wk:'p3r2'}, {type:'rest'}
+      {type:'lift',wk:'p3push'}, {type:'lift',wk:'p3pull'}, {type:'run',wk:'p3r1'}, {type:'lift',wk:'p3fb'}, {type:'lift',wk:'p3upper'}, {type:'run',wk:'p3r2'}, {type:'rest'}
     ],
     workouts:{
       p3push:{
@@ -387,18 +378,19 @@ const PHASES = [
           {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]
       },
-      p3legs:{
-        name:'Legs', focus:'Quads, Glutes, Hamstrings', dur:'45-50 min',
-        warmup:'5 min: jog, bodyweight squats, leg swings, hip circles, glute bridges',
-        cooldown:'Thorough leg stretch \u2014 quads, hams, hips, calves \u2014 5 min.',
+      p3fb:{
+        name:'Full Body (Upper Focus)', focus:'Heavy Compound + Upper Volume', dur:'45-50 min',
+        warmup:'5 min: jog, arm circles, leg swings, 1 light deadlift set',
+        cooldown:'Stretch upper body, hamstrings, hips \u2014 5 min.',
         exercises:[
-          {id:'trap_dl',sets:4,reps:'6',rest:120,int:'heavy',rpe:'8',note:'Heavy deads. Moderate weight, drive through the floor.'},
-          {id:'db_goblet',sets:4,reps:'10',rest:60,int:'mod',rpe:'8',note:'Heavier dumbbell now. Deep squats build legs.'},
-          {id:'db_split',sets:3,reps:'10 ea',rest:75,int:'mod',rpe:'8',note:'These should be getting easier. Time to add weight.'},
-          {id:'db_rdl',sets:3,reps:'10',rest:60,int:'mod',rpe:'7-8',note:'Slow negative. Feel every inch of that hamstring stretch.'},
-          {id:'db_calf',sets:4,reps:'15',rest:45,int:'light',rpe:'7',note:'High volume calves. Full ROM. Pause at top and bottom.'},
-          {id:'farmer',sets:3,reps:'40 steps',rest:60,int:'mod',rpe:'7',note:'Heavy walks. Core braced, walk like a tank.'},
-          {id:'plank',sets:3,reps:'45s',rest:45,int:'light',rpe:'7',note:'Core finisher. Hold for 30-60 seconds, focus on tight glutes and braced abs.'}
+          {id:'trap_dl',sets:3,reps:'5',rest:120,int:'heavy',rpe:'8-9',note:'Heavy compound. Posterior chain + traps + total-body strength stimulus. Replaces a dedicated leg day for someone whose legs are already strong.'},
+          {id:'db_incline',sets:4,reps:'8',rest:75,int:'mod',rpe:'8',note:'Heavy upper chest. Build pressing strength.'},
+          {id:'trap_row',sets:4,reps:'8',rest:75,int:'mod',rpe:'8',note:'Heavy back. Match or beat the press weights.'},
+          {id:'db_shoulder',sets:3,reps:'10',rest:60,int:'mod',rpe:'7-8',note:'Shoulder volume.'},
+          {id:'db_split',sets:2,reps:'10 ea',rest:60,int:'mod',rpe:'7',note:'Two sets only \u2014 leg maintenance.'},
+          {id:'db_hammer',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Arm thickness.'},
+          {id:'db_skull',sets:3,reps:'10',rest:45,int:'light',rpe:'7',note:'Triceps for arm size.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Posture work. Pull rope to face, external rotation at top.'}
         ]
       },
       p3upper:{
@@ -431,7 +423,7 @@ const PHASES = [
     desc:'The peak \u2014 like your sharpening weeks before a marathon. You know every movement cold. The habit is locked in. Now you push. Heavy compounds with long rest, volume work with short rest. This is where the transformation becomes undeniable.',
     prog:'Push for PRs on compound lifts. Isolation: if the set doesn\'t burn, it\'s too light. Final 4 weeks \u2014 empty the tank every session.',
     schedule:[
-      {type:'lift',wk:'p4push'}, {type:'lift',wk:'p4pull'}, {type:'run',wk:'p4r1'}, {type:'lift',wk:'p4legs'}, {type:'lift',wk:'p4upper'}, {type:'run',wk:'p4r2'}, {type:'rest'}
+      {type:'lift',wk:'p4push'}, {type:'lift',wk:'p4pull'}, {type:'run',wk:'p4r1'}, {type:'lift',wk:'p4fb'}, {type:'lift',wk:'p4upper'}, {type:'run',wk:'p4r2'}, {type:'rest'}
     ],
     workouts:{
       p4push:{
@@ -462,18 +454,19 @@ const PHASES = [
           {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]
       },
-      p4legs:{
-        name:'Legs (Volume)', focus:'Full Legs', dur:'50-60 min',
-        warmup:'5 min: jog, squats, leg swings, hip circles, glute bridges',
-        cooldown:'Thorough leg stretch \u2014 quads, hams, hips, calves \u2014 5+ min.',
+      p4fb:{
+        name:'Full Body (Upper Focus)', focus:'Heavy Compound + Upper Power', dur:'50-55 min',
+        warmup:'5 min: jog, arm circles, leg swings, 2 warm-up sets',
+        cooldown:'Stretch upper, hamstrings, hips \u2014 5 min.',
         exercises:[
-          {id:'trap_dl',sets:4,reps:'8',rest:90,int:'mod',rpe:'8',note:'Moderate weight, volume day. Drive the floor away.'},
-          {id:'db_goblet',sets:4,reps:'12',rest:60,int:'mod',rpe:'8',note:'Heavy dumbbell, high reps. Deep squats.'},
-          {id:'db_split',sets:3,reps:'12 ea',rest:75,int:'mod',rpe:'8-9',note:'More reps than Phase 3. These should be brutal. Embrace it.'},
-          {id:'db_rdl',sets:3,reps:'12',rest:60,int:'mod',rpe:'8',note:'Slow eccentric. Hamstrings should be on fire.'},
-          {id:'db_calf',sets:4,reps:'20',rest:45,int:'light',rpe:'8',note:'20 reps. Full ROM. Calves need volume to grow.'},
-          {id:'farmer',sets:4,reps:'40 steps',rest:60,int:'mod',rpe:'8',note:'Heaviest farmer walks of the program. Walk like a tank.'},
-          {id:'plank',sets:3,reps:'45s',rest:45,int:'light',rpe:'7',note:'Core finisher. Hold for 30-60 seconds, focus on tight glutes and braced abs.'}
+          {id:'trap_dl',sets:4,reps:'5',rest:150,int:'heavy',rpe:'9',note:'Heavy compound. Push for a PR. Replaces a dedicated leg day \u2014 this single movement covers everything from traps to calves.'},
+          {id:'db_bench',sets:4,reps:'6',rest:90,int:'heavy',rpe:'8-9',note:'Heavy chest reinforcement. Real growth weight.'},
+          {id:'db_row',sets:4,reps:'6 ea',rest:90,int:'heavy',rpe:'8-9',note:'Heavy back reinforcement. Match or beat the bench.'},
+          {id:'db_shoulder',sets:3,reps:'8',rest:75,int:'mod',rpe:'8',note:'Heavy shoulder press.'},
+          {id:'db_split',sets:2,reps:'10 ea',rest:60,int:'mod',rpe:'7',note:'Light leg maintenance \u2014 2 sets is plenty.'},
+          {id:'db_curl',sets:3,reps:'10',rest:45,int:'mod',rpe:'8',note:'Strict, heavy curls.'},
+          {id:'db_skull',sets:3,reps:'10',rest:45,int:'mod',rpe:'8',note:'Heavy triceps.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Posture work.'}
         ]
       },
       p4upper:{
@@ -509,7 +502,7 @@ const PHASES = [
     desc:'Time to GROW. You\'ve built the habit, learned the lifts, and stripped initial fat. Now we flip the switch: caloric surplus on lift days to fuel muscle growth. New split adds a dedicated Arms & Shoulders day. This is where you start looking jacked.',
     prog:'You\'re eating in surplus now \u2014 fuel the growth. Push for heavier weights on every compound. Add weight whenever you complete all prescribed reps. Arms and shoulders are the priority for the \u201clook\u201d you want.',
     schedule:[
-      {type:'lift',wk:'p5_push'}, {type:'lift',wk:'p5_pull'}, {type:'lift',wk:'p5_legs'}, {type:'lift',wk:'p5_arms'}, {type:'lift',wk:'p5_upper'}, {type:'run',wk:'p5_trail'}, {type:'rest'}
+      {type:'lift',wk:'p5_push'}, {type:'lift',wk:'p5_pull'}, {type:'lift',wk:'p5_fb'}, {type:'lift',wk:'p5_arms'}, {type:'lift',wk:'p5_upper'}, {type:'run',wk:'p5_trail'}, {type:'rest'}
     ],
     workouts:{
       p5_push:{name:'Push',focus:'Chest, Shoulders, Triceps',dur:'50-55 min',
@@ -535,17 +528,18 @@ const PHASES = [
           {id:'trap_shrug',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Heavy shrugs. Build the yoke.'},
           {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]},
-      p5_legs:{name:'Legs',focus:'Full Legs',dur:'50-55 min',
-        warmup:'5 min jog, squats, leg swings, hip circles, glute bridges',
-        cooldown:'Stretch quads, hams, hips, calves \u2014 5 min.',
+      p5_fb:{name:'Full Body (Upper Focus)',focus:'Heavy Compound + Upper Volume',dur:'50-55 min',
+        warmup:'5 min jog, arm circles, leg swings, 1-2 warm-up sets',
+        cooldown:'Stretch upper, hamstrings \u2014 5 min.',
         exercises:[
-          {id:'trap_dl',sets:4,reps:'8',rest:90,int:'mod',rpe:'8',note:'Volume deads.'},
-          {id:'db_goblet',sets:4,reps:'12',rest:60,int:'mod',rpe:'8',note:'Deep squats, heavy DB.'},
-          {id:'db_split',sets:3,reps:'10 ea',rest:75,int:'mod',rpe:'8',note:'Single leg strength.'},
-          {id:'db_rdl',sets:3,reps:'12',rest:60,int:'mod',rpe:'7-8',note:'Hamstring focus.'},
-          {id:'db_calf',sets:4,reps:'20',rest:45,int:'light',rpe:'8',note:'High rep calves.'},
-          {id:'farmer',sets:3,reps:'40 steps',rest:60,int:'mod',rpe:'8',note:'Heavy carries.'},
-          {id:'plank',sets:3,reps:'45s',rest:45,int:'light',rpe:'7',note:'Core finisher. Hold for 30-60 seconds, focus on tight glutes and braced abs.'}
+          {id:'trap_dl',sets:4,reps:'6',rest:120,int:'heavy',rpe:'8',note:'Heavy compound. Posterior chain stimulus + total-body strength. Replaces dedicated leg day for upper-focus emphasis.'},
+          {id:'db_incline',sets:4,reps:'8',rest:75,int:'mod',rpe:'8',note:'Heavy upper chest.'},
+          {id:'trap_row',sets:4,reps:'8',rest:75,int:'mod',rpe:'8',note:'Thick back.'},
+          {id:'db_shoulder',sets:3,reps:'10',rest:60,int:'mod',rpe:'7-8',note:'Shoulder press volume.'},
+          {id:'db_split',sets:2,reps:'10 ea',rest:60,int:'mod',rpe:'7',note:'Two sets \u2014 leg maintenance.'},
+          {id:'db_curl',sets:3,reps:'10',rest:45,int:'mod',rpe:'8',note:'Heavy curls.'},
+          {id:'db_skull',sets:3,reps:'10',rest:45,int:'mod',rpe:'8',note:'Triceps.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Posture work.'}
         ]},
       p5_arms:{name:'Arms & Shoulders',focus:'Biceps, Triceps, Delts',dur:'45-50 min',
         warmup:'5 min jog, arm circles, light shoulder press warm-up',
@@ -585,7 +579,7 @@ const PHASES = [
     desc:'Same split, more intensity. Arms and shoulders get extra volume. By now you should be noticeably bigger. Your wife will notice. Keep pushing the surplus and the weights.',
     prog:'Compounds should be significantly heavier than Phase 4. If your arm exercises feel easy at RPE 7, bump the weight. Chase the pump on arm day \u2014 blood flow = growth.',
     schedule:[
-      {type:'lift',wk:'p6_push'}, {type:'lift',wk:'p6_pull'}, {type:'lift',wk:'p6_legs'}, {type:'lift',wk:'p6_arms'}, {type:'lift',wk:'p6_upper'}, {type:'run',wk:'p6_trail'}, {type:'rest'}
+      {type:'lift',wk:'p6_push'}, {type:'lift',wk:'p6_pull'}, {type:'lift',wk:'p6_fb'}, {type:'lift',wk:'p6_arms'}, {type:'lift',wk:'p6_upper'}, {type:'run',wk:'p6_trail'}, {type:'rest'}
     ],
     workouts:{
       p6_push:{name:'Push',focus:'Chest, Shoulders, Triceps',dur:'50-55 min',
@@ -610,17 +604,17 @@ const PHASES = [
           {id:'trap_shrug',sets:4,reps:'10',rest:45,int:'mod',rpe:'8',note:'Heavy. Hold 2 sec at top.'},
           {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]},
-      p6_legs:{name:'Legs',focus:'Full Legs',dur:'50-55 min',
-        warmup:'5 min jog, squats, leg swings, hip circles',cooldown:'Stretch legs \u2014 5 min.',
+      p6_fb:{name:'Full Body (Upper Focus)',focus:'Heavy Compound + Upper Power',dur:'50-55 min',
+        warmup:'5 min jog, arm circles, leg swings, 2 warm-up sets',cooldown:'Stretch upper \u2014 5 min.',
         exercises:[
-          {id:'trap_dl',sets:4,reps:'6',rest:120,int:'heavy',rpe:'8',note:'Heavy deads.'},
-          {id:'db_goblet',sets:4,reps:'10',rest:60,int:'mod',rpe:'8',note:'Heavy goblet squats.'},
-          {id:'db_split',sets:3,reps:'12 ea',rest:75,int:'mod',rpe:'8-9',note:'High rep split squats. Brutal.'},
-          {id:'db_rdl',sets:3,reps:'12',rest:60,int:'mod',rpe:'8',note:'Hamstring growth.'},
-          {id:'db_lunge',sets:3,reps:'10 ea',rest:60,int:'mod',rpe:'7-8',note:'Walking lunges for legs and glutes.'},
-          {id:'db_calf',sets:4,reps:'20',rest:45,int:'light',rpe:'8',note:'Calves need volume.'},
-          {id:'farmer',sets:3,reps:'40 steps',rest:60,int:'mod',rpe:'8',note:'Heavy carries.'},
-          {id:'plank',sets:3,reps:'45s',rest:45,int:'light',rpe:'7',note:'Core finisher. Hold for 30-60 seconds, focus on tight glutes and braced abs.'}
+          {id:'trap_dl',sets:4,reps:'5',rest:150,int:'heavy',rpe:'9',note:'PR territory. Heavy compound \u2014 your lower stimulus.'},
+          {id:'db_bench',sets:4,reps:'6',rest:90,int:'heavy',rpe:'8-9',note:'Heavy chest reinforcement.'},
+          {id:'db_row',sets:4,reps:'6 ea',rest:90,int:'heavy',rpe:'8-9',note:'Heavy back reinforcement.'},
+          {id:'db_shoulder',sets:3,reps:'8',rest:75,int:'mod',rpe:'8',note:'Heavy shoulder press.'},
+          {id:'db_split',sets:2,reps:'10 ea',rest:60,int:'mod',rpe:'7',note:'Two sets \u2014 leg maintenance.'},
+          {id:'db_curl',sets:3,reps:'8',rest:60,int:'mod',rpe:'8',note:'Heavy biceps.'},
+          {id:'db_skull',sets:3,reps:'8',rest:60,int:'mod',rpe:'8',note:'Heavy triceps.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Posture work.'}
         ]},
       p6_arms:{name:'Arms & Shoulders',focus:'Biceps, Triceps, Delts',dur:'50-55 min',
         warmup:'5 min jog, arm circles, light press warm-up',cooldown:'Stretch shoulders, arms \u2014 5 min.',
@@ -658,7 +652,7 @@ const PHASES = [
     desc:'Peak of the bulk. Heaviest weights you\'ve ever touched. You are significantly stronger and bigger than when you started. Compound PRs across the board. Arms and shoulders should be visibly larger.',
     prog:'PR attempts on all compounds. If you hit all reps, add weight. You\'re eating surplus \u2014 use it. This is the strongest you\'ll be before the cut.',
     schedule:[
-      {type:'lift',wk:'p5_push'}, {type:'lift',wk:'p5_pull'}, {type:'lift',wk:'p5_legs'}, {type:'lift',wk:'p6_arms'}, {type:'lift',wk:'p5_upper'}, {type:'run',wk:'p5_trail'}, {type:'rest'}
+      {type:'lift',wk:'p5_push'}, {type:'lift',wk:'p5_pull'}, {type:'lift',wk:'p5_fb'}, {type:'lift',wk:'p6_arms'}, {type:'lift',wk:'p5_upper'}, {type:'run',wk:'p5_trail'}, {type:'rest'}
     ],
     workouts:{}
   },
@@ -669,7 +663,7 @@ const PHASES = [
     desc:'Final bulk phase. Maximum volume. You\'re the biggest and strongest you\'ve ever been. After this, we start stripping fat to reveal everything you\'ve built. Enjoy the strength \u2014 savor these PRs.',
     prog:'Maintain or push PRs on compounds. High volume on isolation. This is the last phase of surplus eating \u2014 make it count.',
     schedule:[
-      {type:'lift',wk:'p6_push'}, {type:'lift',wk:'p6_pull'}, {type:'lift',wk:'p6_legs'}, {type:'lift',wk:'p6_arms'}, {type:'lift',wk:'p6_upper'}, {type:'run',wk:'p6_trail'}, {type:'rest'}
+      {type:'lift',wk:'p6_push'}, {type:'lift',wk:'p6_pull'}, {type:'lift',wk:'p6_fb'}, {type:'lift',wk:'p6_arms'}, {type:'lift',wk:'p6_upper'}, {type:'run',wk:'p6_trail'}, {type:'rest'}
     ],
     workouts:{}
   },
@@ -682,7 +676,7 @@ const PHASES = [
     desc:'Time to reveal the muscle. Caloric deficit starts. Protein goes UP to 1.3g/lb to preserve every pound of muscle. Running comes back to 2x/week for extra calorie burn. Keep lifting HEAVY \u2014 maintaining strength = maintaining muscle.',
     prog:'DO NOT drop weight on compounds. The #1 mistake during a cut is going lighter. Maintain your heavy weights. Reduce volume (fewer sets) but NOT intensity. Your body keeps muscle it needs.',
     schedule:[
-      {type:'lift',wk:'p9_push'}, {type:'lift',wk:'p9_pull'}, {type:'run',wk:'p9_tempo'}, {type:'lift',wk:'p9_legs'}, {type:'lift',wk:'p9_upper'}, {type:'run',wk:'p9_trail'}, {type:'rest'}
+      {type:'lift',wk:'p9_push'}, {type:'lift',wk:'p9_pull'}, {type:'run',wk:'p9_tempo'}, {type:'lift',wk:'p9_fb'}, {type:'lift',wk:'p9_upper'}, {type:'run',wk:'p9_trail'}, {type:'rest'}
     ],
     workouts:{
       p9_push:{name:'Push',focus:'Chest, Shoulders, Triceps',dur:'45-50 min',
@@ -706,16 +700,16 @@ const PHASES = [
           {id:'trap_shrug',sets:3,reps:'10',rest:45,int:'mod',rpe:'7',note:'Trap maintenance.'},
           {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]},
-      p9_legs:{name:'Legs',focus:'Full Legs',dur:'45-50 min',
-        warmup:'5 min jog, squats, leg swings, hip circles',cooldown:'Stretch \u2014 5 min.',
+      p9_fb:{name:'Full Body (Upper Focus)',focus:'Heavy Maintenance',dur:'45-50 min',
+        warmup:'5 min jog, arm circles, leg swings',cooldown:'Stretch \u2014 5 min.',
         exercises:[
-          {id:'trap_dl',sets:4,reps:'6',rest:120,int:'heavy',rpe:'8',note:'Keep it heavy.'},
-          {id:'db_goblet',sets:3,reps:'10',rest:60,int:'mod',rpe:'8',note:'Maintain leg size.'},
-          {id:'db_split',sets:3,reps:'10 ea',rest:75,int:'mod',rpe:'8',note:'Single leg work.'},
-          {id:'db_rdl',sets:3,reps:'10',rest:60,int:'mod',rpe:'7-8',note:'Hamstrings.'},
-          {id:'db_calf',sets:3,reps:'20',rest:45,int:'light',rpe:'8',note:'Calves.'},
-          {id:'farmer',sets:3,reps:'40 steps',rest:60,int:'mod',rpe:'7',note:'Core and grip.'},
-          {id:'plank',sets:3,reps:'45s',rest:45,int:'light',rpe:'7',note:'Core finisher. Hold for 30-60 seconds, focus on tight glutes and braced abs.'}
+          {id:'trap_dl',sets:4,reps:'5',rest:120,int:'heavy',rpe:'8-9',note:'MAINTAIN. Do not drop weight on the cut. Heavy compound preserves muscle.'},
+          {id:'db_bench',sets:3,reps:'6',rest:90,int:'heavy',rpe:'8',note:'Maintain pressing strength.'},
+          {id:'db_row',sets:3,reps:'6 ea',rest:90,int:'heavy',rpe:'8',note:'Maintain pulling strength.'},
+          {id:'db_shoulder',sets:3,reps:'8',rest:75,int:'mod',rpe:'8',note:'Maintain shoulders.'},
+          {id:'db_split',sets:2,reps:'10 ea',rest:60,int:'mod',rpe:'7',note:'Leg maintenance \u2014 2 sets.'},
+          {id:'db_curl',sets:3,reps:'10',rest:45,int:'mod',rpe:'7',note:'Arm maintenance.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Posture work.'}
         ]},
       p9_upper:{name:'Upper',focus:'Full Upper Maintenance',dur:'45-50 min',
         warmup:'5 min jog, arm circles, push-ups',cooldown:'Stretch \u2014 5 min.',
@@ -744,7 +738,7 @@ const PHASES = [
     desc:'You\'re getting lean. Abs are appearing. Vascularity increasing. Keep the deficit, keep the protein high, keep lifting heavy. The muscle is there \u2014 we\'re just removing what\'s covering it.',
     prog:'Maintain all compound weights. If you lose a rep or two on isolation, that\'s OK. Focus on keeping compounds HEAVY. The scale is dropping but the mirror is getting better.',
     schedule:[
-      {type:'lift',wk:'p9_push'}, {type:'lift',wk:'p9_pull'}, {type:'run',wk:'p9_tempo'}, {type:'lift',wk:'p9_legs'}, {type:'lift',wk:'p9_upper'}, {type:'run',wk:'p9_trail'}, {type:'rest'}
+      {type:'lift',wk:'p9_push'}, {type:'lift',wk:'p9_pull'}, {type:'run',wk:'p9_tempo'}, {type:'lift',wk:'p9_fb'}, {type:'lift',wk:'p9_upper'}, {type:'run',wk:'p9_trail'}, {type:'rest'}
     ],
     workouts:{}
   },
@@ -755,7 +749,7 @@ const PHASES = [
     desc:'The final push. Deficit deepens. Running increases to 3x/week \u2014 think of it like your marathon taper but in reverse. You\'re using your endurance background as a weapon now. Every run strips more fat. Every heavy lift says \u201ckeep this muscle.\u201d',
     prog:'3 lift days focused on HEAVY compounds. Keep the weight on the bar. Run 3x/week including tempo. Protein at 1.3g/lb. Refeed meal every Sunday (eat at maintenance) to prevent metabolic adaptation.',
     schedule:[
-      {type:'lift',wk:'p11_upper_h'}, {type:'run',wk:'p11_tempo'}, {type:'lift',wk:'p11_legs'}, {type:'run',wk:'p11_easy'}, {type:'lift',wk:'p11_upper_v'}, {type:'run',wk:'p11_trail'}, {type:'rest'}
+      {type:'lift',wk:'p11_upper_h'}, {type:'run',wk:'p11_tempo'}, {type:'lift',wk:'p11_fb'}, {type:'run',wk:'p11_easy'}, {type:'lift',wk:'p11_upper_v'}, {type:'run',wk:'p11_trail'}, {type:'rest'}
     ],
     workouts:{
       p11_upper_h:{name:'Upper Heavy',focus:'Compound Strength',dur:'45-50 min',
@@ -769,15 +763,16 @@ const PHASES = [
           {id:'db_tri_oh',sets:3,reps:'10',rest:45,int:'mod',rpe:'7',note:'Tricep maintenance.'},
           {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Critical for posture and shoulder health. Use rope, pull to face, aim past ears with external rotation at top.'}
         ]},
-      p11_legs:{name:'Legs',focus:'Full Legs',dur:'45-50 min',
-        warmup:'5 min jog, squats, leg swings, hip circles',cooldown:'Stretch \u2014 5 min.',
+      p11_fb:{name:'Full Body (Upper Focus)',focus:'Heavy Maintenance',dur:'45-50 min',
+        warmup:'5 min jog, arm circles, leg swings',cooldown:'Stretch \u2014 5 min.',
         exercises:[
-          {id:'trap_dl',sets:4,reps:'5',rest:120,int:'heavy',rpe:'8-9',note:'HEAVY deads. Keep the weight. Non-negotiable.'},
-          {id:'db_goblet',sets:3,reps:'10',rest:60,int:'mod',rpe:'8',note:'Leg maintenance.'},
-          {id:'db_split',sets:3,reps:'10 ea',rest:75,int:'mod',rpe:'8',note:'Single leg strength.'},
-          {id:'db_rdl',sets:3,reps:'10',rest:60,int:'mod',rpe:'7-8',note:'Hamstrings.'},
-          {id:'db_calf',sets:3,reps:'20',rest:45,int:'light',rpe:'8',note:'Calves.'},
-          {id:'plank',sets:3,reps:'45s',rest:45,int:'light',rpe:'7',note:'Core finisher. Hold for 30-60 seconds, focus on tight glutes and braced abs.'}
+          {id:'trap_dl',sets:4,reps:'5',rest:120,int:'heavy',rpe:'8-9',note:'HEAVY deads. Maintain the weight. Non-negotiable during the shred \u2014 your lower stimulus.'},
+          {id:'db_bench',sets:3,reps:'5',rest:120,int:'heavy',rpe:'8-9',note:'Maintain heavy bench.'},
+          {id:'db_row',sets:3,reps:'6 ea',rest:90,int:'heavy',rpe:'8',note:'Maintain heavy rows.'},
+          {id:'db_shoulder',sets:3,reps:'8',rest:75,int:'mod',rpe:'8',note:'Maintain shoulder press.'},
+          {id:'db_split',sets:2,reps:'10 ea',rest:60,int:'mod',rpe:'7',note:'Leg maintenance \u2014 2 sets.'},
+          {id:'db_lateral',sets:3,reps:'15',rest:45,int:'light',rpe:'8',note:'Width maintenance.'},
+          {id:'face_pull',sets:3,reps:'12',rest:60,int:'light',rpe:'7',note:'Posture work.'}
         ]},
       p11_upper_v:{name:'Upper Volume',focus:'Pump & Maintain',dur:'40-45 min',
         warmup:'5 min jog, arm circles, push-ups',cooldown:'Stretch \u2014 5 min.',
@@ -808,7 +803,7 @@ const PHASES = [
     desc:'The final phase. You are lean, muscular, and getting shredded. Abs are clearly visible. Veins appearing on arms and shoulders. This phase finishes the job. Sunday is a REFEED day \u2014 eat at maintenance to keep metabolism firing and muscles full. You\'re going to look incredible.',
     prog:'Maintain ALL compound weights. Do not drop. Protein stays at 1.3g/lb. Sunday refeed: eat at TDEE with extra carbs \u2014 you\'ll look your best the day after a refeed. Take progress photos on Monday mornings.',
     schedule:[
-      {type:'lift',wk:'p11_upper_h'}, {type:'run',wk:'p11_tempo'}, {type:'lift',wk:'p11_legs'}, {type:'run',wk:'p11_easy'}, {type:'lift',wk:'p11_upper_v'}, {type:'run',wk:'p11_trail'}, {type:'rest'}
+      {type:'lift',wk:'p11_upper_h'}, {type:'run',wk:'p11_tempo'}, {type:'lift',wk:'p11_fb'}, {type:'run',wk:'p11_easy'}, {type:'lift',wk:'p11_upper_v'}, {type:'run',wk:'p11_trail'}, {type:'rest'}
     ],
     workouts:{}
   }
@@ -1113,6 +1108,49 @@ function suggestNext(exId, targetRepsHint){
     return { weight: Math.max(0, topWeight - step), label: 'drop', last, summary, step, unit: ex.unit };
   }
   return { weight: topWeight, label: 'hold', last, summary, step, unit: ex.unit };
+}
+
+// ---- STRENGTH BALANCE (upper vs lower) ----
+// Compares best estimated 1-rep max on trap_dl (lower) against db_bench × 2 (upper, total load).
+// Marathon-background users typically start very lower-dominant; this card surfaces that fact
+// and tells the user when they've closed the gap enough to bring leg days back.
+function strengthBalance(){
+  const targets = ['trap_dl', 'db_bench'];
+  const best = {};
+  for(let i=0; i<180; i++){
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const ses = S.session(ds(norm(d)));
+    targets.forEach(exId => {
+      const perf = sessionPerf(ses, exId);
+      if(!perf || !perf.length) return;
+      perf.forEach(p => {
+        if(p.w == null || p.r == null) return;
+        // Epley e1RM. Cap reps at 12 to avoid overestimating from very high-rep sets.
+        const r = Math.min(p.r, 12);
+        const e1rm = p.w * (1 + r / 30);
+        if(!best[exId] || e1rm > best[exId].e1rm){ best[exId] = { e1rm, w: p.w, r: p.r }; }
+      });
+    });
+  }
+  if(!best.trap_dl || !best.db_bench) return null;
+  const lower = best.trap_dl.e1rm;
+  const benchTotal = best.db_bench.e1rm * 2; // each DB is one side
+  const ratio = lower / benchTotal;
+  let level, msg;
+  if(ratio > 2.5){
+    level = 'Lower-dominant';
+    msg = 'Your trap-bar deadlift is roughly ' + ratio.toFixed(1) + '× your bench. Years of marathon training built that lower body — the current upper-focused split is exactly the right move. Keep at it.';
+  } else if(ratio > 2.0){
+    level = 'Lower-leaning';
+    msg = 'Lower body still leads upper. The upper-focus split is doing its job — keep pushing chest, back, and shoulders.';
+  } else if(ratio > 1.4){
+    level = 'Balanced';
+    msg = 'Upper and lower are roughly balanced now. The upper-focus emphasis still helps hypertrophy distribution, but you could also consider reintroducing a leg day in the next phase.';
+  } else {
+    level = 'Upper-strong';
+    msg = 'Upper body has caught up. Time to bring back a real leg session in the next phase to keep posterior-chain strength up.';
+  }
+  return { ratio, lower, benchTotal, best, level, msg };
 }
 
 // ---- LIFT PR TRACKING ----
@@ -1560,6 +1598,20 @@ const App = {
         h+=`<div class="pr-item"><div class="pr-name">${ex.name}</div><div class="pr-val">${wt}<span class="bc-unit"> ${ex.unit==='each'?'ea':'lbs'}</span></div></div>`;
       });
       h+=`</div></div>`;
+    }
+
+    // Upper / Lower balance card (only shows when both trap_dl and db_bench have logged sets)
+    const sb = strengthBalance();
+    if(sb){
+      h+=`<div class="card"><div class="section-title">Upper / Lower Balance</div>
+        <div class="bc-grid">
+          <div class="bc-stat"><div class="bc-label">Trap DL e1RM</div><div class="bc-val">${Math.round(sb.lower)}<span class="bc-unit"> lbs</span></div></div>
+          <div class="bc-stat"><div class="bc-label">Bench e1RM (total)</div><div class="bc-val">${Math.round(sb.benchTotal)}<span class="bc-unit"> lbs</span></div></div>
+          <div class="bc-stat"><div class="bc-label">DL ÷ Bench</div><div class="bc-val">${sb.ratio.toFixed(2)}<span class="bc-unit">×</span></div></div>
+          <div class="bc-stat"><div class="bc-label">Status</div><div class="bc-val" style="font-size:13px;line-height:1.3">${sb.level}</div></div>
+        </div>
+        <div class="bc-goal">${sb.msg} <em style="display:block;margin-top:6px;color:var(--muted);font-style:normal;font-size:11px">Reference: trained males typically sit around 1.5–2× (deadlift to bench, total). Marathoners often start at 3×+.</em></div>
+      </div>`;
     }
 
     return h;
